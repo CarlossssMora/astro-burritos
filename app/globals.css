@@ -191,6 +191,7 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .range-label { margin-left: 8px; font: 400 13px var(--font-mono); color: var(--muted-foreground); }
 .export-button { display: flex; gap: 6px; align-items: center; flex-shrink: 0; padding: 7px 14px; border: 0; border-radius: 10px; background: var(--primary); color: var(--primary-foreground); font-size: 14px; font-weight: 700; transition: background-color .15s; }
 .export-button:not(:disabled):hover { background: var(--color-electric-blue); }
+.retry-button { margin-top: 10px; }
 .chart-empty { position: relative; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 10px 20px 26px; }
 .chart-empty-icon { width: 40px; height: 40px; display: grid; place-items: center; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--muted); color: var(--primary); font-weight: 700; }
 .chart-empty strong { font-size: 16px; font-weight: 700; }
@@ -215,6 +216,7 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .area-scale { position: absolute; left: 4%; bottom: 12px; height: 8px; border: 2px solid var(--foreground); border-top: 0; }
 .area-scale span { position: absolute; left: 0; bottom: 10px; white-space: nowrap; font: 500 12px/1 var(--font-mono); color: var(--foreground); }
 .chart-line { stroke: var(--primary); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.trend-line { stroke: var(--color-rocket-red); stroke-width: 1.5; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; } /* was neon-yellow: ~1.1:1 on white cards */
 .chart-dot { fill: var(--card); stroke: var(--primary); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .chart-disclaimer { margin: 8px 0 0; text-align: center; font-size: 12px; line-height: 1.45; color: var(--muted-foreground); }
 .loading-icon { margin-bottom: 8px; color: var(--primary); animation: earthscope-spin 1.2s linear infinite; }
