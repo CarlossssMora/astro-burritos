@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: ['192.168.1.67'],
   async headers() {
     // No X-Frame-Options on purpose: it blocks the v0 preview, which embeds the app in an iframe.
     return [{ source: '/(.*)', headers: [

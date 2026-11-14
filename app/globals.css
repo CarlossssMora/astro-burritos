@@ -138,13 +138,15 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .globe-head h2 span { color: var(--color-blue-yonder); }
 .live-ring { width: 8px; height: 8px; border-radius: 50%; background: var(--color-neon-yellow); }
 .globe-controls { display: flex; gap: 8px; }
-.globe-stage { height: 380px; position: relative; overflow: hidden; }
+.globe-stage { height: 380px; position: relative; overflow: hidden; isolation: isolate; }
 /* "coordinates" pattern, screened back to 25% over blue (brand pattern rule) */
-.globe-stage::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(var(--color-electric-blue) 1px, transparent 1px), linear-gradient(90deg, var(--color-electric-blue) 1px, transparent 1px); background-size: 48px 48px; opacity: .25; mask-image: radial-gradient(ellipse at center, var(--color-deep-blue) 10%, transparent 80%); }
-.globe-canvas { position: absolute; inset: 0; }
-.globe-canvas canvas { outline: none; }
+.globe-stage::before { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -2; background-image: linear-gradient(var(--color-electric-blue) 1px, transparent 1px), linear-gradient(90deg, var(--color-electric-blue) 1px, transparent 1px); background-size: 48px 48px; opacity: .2; mask-image: radial-gradient(ellipse at center, var(--color-deep-blue) 10%, transparent 80%); }
+.globe-stage::after { content: ""; position: absolute; inset: 2% 0 8%; pointer-events: none; z-index: -1; background: radial-gradient(circle at 17% 28%, rgba(255,255,255,.8) 0 1px, transparent 1.6px), radial-gradient(circle at 78% 20%, rgba(126,186,255,.75) 0 1px, transparent 1.5px), radial-gradient(circle at 85% 72%, rgba(255,255,255,.65) 0 1px, transparent 1.4px), radial-gradient(circle at 29% 76%, rgba(46,150,245,.8) 0 1px, transparent 1.6px), radial-gradient(ellipse at center, rgba(14,71,137,.22), transparent 62%); background-size: 151px 137px, 223px 191px, 181px 211px, 263px 229px, 100% 100%; opacity: .62; mask-image: radial-gradient(ellipse at center, black 18%, transparent 82%); }
+.globe-canvas { position: absolute; inset: 0; filter: drop-shadow(0 0 18px rgba(46,150,245,.22)); }
+.globe-canvas canvas { outline: none; cursor: grab; }
+.globe-canvas canvas:active { cursor: grabbing; }
 .globe-loading { position: absolute; inset: 0; display: grid; place-items: center; font-size: 14px; color: var(--color-blue-yonder); }
-.globe-caption { position: absolute; bottom: 6px; left: 2px; right: 2px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--color-blue-yonder); letter-spacing: .06em; pointer-events: none; }
+.globe-caption { position: absolute; z-index: 2; bottom: 6px; left: 2px; right: 2px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--color-blue-yonder); letter-spacing: .06em; pointer-events: none; }
 .globe-caption > span { display: flex; align-items: center; gap: 6px; }
 .globe-location { color: var(--color-white); text-transform: none; letter-spacing: 0; font-size: 13px; }
 .globe-legend { display: flex; align-items: center; gap: 12px; padding-top: 10px; border-top: 1px solid var(--color-electric-blue); }
