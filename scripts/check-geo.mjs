@@ -21,5 +21,10 @@ assert.ok(inside(fitRussia, russia.geometry, 600, 320), 'Russia fits after the a
 // Unwrapped, Russia spans ~360° (≈34 km/px at 600×320); shifted it spans ~170° (≈16 km/px).
 assert.ok(fitRussia.kmPerPixel < 20, `Russia is not squashed (km/px = ${fitRussia.kmPerPixel.toFixed(1)})`)
 
+// invert() undoes project(), including across the antimeridian (Chukotka sits at about -175°).
+const close = ([a, b], [c, d]) => Math.abs(a - c) < 1e-9 && Math.abs(b - d) < 1e-9
+assert.ok(close(fit.invert(...fit.project(-98.2, 19.04)), [-98.2, 19.04]), 'Puebla round-trips')
+assert.ok(close(fitRussia.invert(...fitRussia.project(-175, 66)), [-175, 66]), 'Chukotka round-trips through the wrap')
+
 assert.deepEqual([0.7, 1, 3, 7, 19, 250, 999].map(niceKm), [0.5, 1, 2, 5, 10, 200, 500])
 console.log('geo checks passed')

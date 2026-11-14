@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import type { GlobeMethods } from 'react-globe.gl'
 import type { Region } from '@/components/location-selector'
+import { ZoomControl } from '@/components/zoom-control'
 import { useCountries, useStates, type CountryFeature, type StateFeature } from '@/lib/geo'
 
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false, loading: () => <div className="globe-loading" role="status">Preparing interactive Earth…</div> })
@@ -26,6 +27,9 @@ const OCEAN_SPECULAR = '#18334a'
 // The enhanced profile renders at up to 2× device pixels; the basic one stays at 1.5× (≈44% fewer pixels).
 const MAX_PIXEL_RATIO = 2
 const BASIC_PIXEL_RATIO = 1.5
+// Zoom is expressed against the default view: camera altitude (in globe radii) = BASE_ALTITUDE / zoom.
+const BASE_ALTITUDE = 1.7
+const GLOBE_ZOOM = { min: 0.5, max: 16 }
 // ponytail: tuned by eye on the light theme; raise for more relief, lower if land washes out.
 const SUN_INTENSITY = 0.5 * Math.PI
 const EARTH_TEXTURE_2K = '/textures/earth-blue-marble.jpg'
@@ -208,6 +212,9 @@ export function EarthGlobe({ region, paused, resetSignal, onSelect }: { region: 
   const [visualProfile, setVisualProfile] = useState<VisualProfile | null>(null)
   const earthMaterial = useMemo(() => new THREE.MeshPhongMaterial({ color: 0x000000, specular: new THREE.Color(OCEAN_SPECULAR_LOADING), shininess: 72 }), [])
   const [hovered, setHovered] = useState<Area | null>(null)
+  const [zoom, setZoom] = useState(1)
+  const positioned = useRef(false)
+  const lastReset = useRef(resetSignal)
   const countries = useCountries().data?.features
   const states = useStates(region.country).data?.features
 
@@ -316,10 +323,33 @@ export function EarthGlobe({ region, paused, resetSignal, onSelect }: { region: 
     globe.controls().autoRotateSpeed = 0.32
   }, [paused, ready])
 
+  // Wheel/pinch zoom stops at the same limits as the slider (camera distance = radius × (1 + altitude)).
   useEffect(() => {
-    if (!ready || !globeRef.current) return
-    globeRef.current.pointOfView({ lat: region.lat, lng: region.lon, altitude: 1.7 }, 750)
+    const globe = globeRef.current
+    if (!ready || !globe) return
+    const radius = globe.getGlobeRadius()
+    globe.controls().minDistance = radius * (1 + BASE_ALTITUDE / GLOBE_ZOOM.max)
+    globe.controls().maxDistance = radius * (1 + BASE_ALTITUDE / GLOBE_ZOOM.min)
+  }, [ready])
+
+  // Fly to the selected point. A new selection keeps the current zoom, so you can zoom in once and
+  // then hop between states; the first view and the reset button go back to 1×.
+  useEffect(() => {
+    const globe = globeRef.current
+    if (!ready || !globe) return
+    const keepZoom = positioned.current && lastReset.current === resetSignal
+    positioned.current = true
+    lastReset.current = resetSignal
+    globe.pointOfView({ lat: region.lat, lng: region.lon, altitude: keepZoom ? globe.pointOfView().altitude : BASE_ALTITUDE }, 750)
   }, [region.lat, region.lon, resetSignal, ready])
+
+  // onZoom fires on every camera change, autorotate included; rounding makes the state update a no-op
+  // unless the altitude really changed, so the slider follows the wheel without re-rendering every frame.
+  const handleZoom = useCallback(({ altitude: cameraAltitude }: { altitude: number }) => setZoom(Number((BASE_ALTITUDE / cameraAltitude).toFixed(2))), [])
+  const zoomTo = useCallback((next: number, animate: boolean) => {
+    setZoom(next)
+    globeRef.current?.pointOfView({ altitude: BASE_ALTITUDE / next }, animate ? 300 : 0)
+  }, [])
 
   const handleReady = useCallback(() => setReady(true), [])
   const handleClick = useCallback(({ lat, lng }: { lat: number; lng: number }) => onSelect({ name: 'Selected coordinates', lat: Number(lat.toFixed(2)), lon: Number(lng.toFixed(2)) }), [onSelect])
@@ -344,11 +374,15 @@ export function EarthGlobe({ region, paused, resetSignal, onSelect }: { region: 
   }, [countryName, onSelect])
   const handlePolygonHover = useCallback((area: object | null) => setHovered(area as Area | null), [])
 
-  return <div ref={wrapRef} className="globe-canvas" role="img" aria-label="Interactive Earth globe. Drag to rotate, scroll to zoom, click a country and then a state to select it.">
+  return <>
+  <div ref={wrapRef} className="globe-canvas" role="img" aria-label="Interactive Earth globe. Drag to rotate, scroll to zoom, click a country and then a state to select it.">
     {webgl === false
       ? <div className="globe-fallback" role="alert"><div className="fallback-globe"><GlobeFallbackIcon /></div><p>Interactive globe unavailable</p><span>Your browser could not start WebGL. Use the location selector to explore a region.</span><button type="button" onClick={() => setWebgl(hasWebGL())}>Retry globe</button></div>
-      : webgl && size.width > 0 && visualProfile && <Globe ref={globeRef} width={size.width} height={size.height} backgroundColor="rgba(0,0,0,0)" globeImageUrl={visualProfile.earthTextureUrl} bumpImageUrl={visualProfile.enhancedEffects ? '/textures/earth-topology.png' : '/textures/earth-topology.jpg'} globeMaterial={earthMaterial} showAtmosphere atmosphereColor={ATMOSPHERE_COLOR} atmosphereAltitude={visualProfile.enhancedEffects ? 0.18 : 0.2} onGlobeReady={handleReady} onGlobeClick={handleClick} polygonsData={polygons} polygonCapColor={capColor} polygonSideColor={noSideWalls} polygonStrokeColor={strokeColor} polygonAltitude={altitude} polygonLabel={label} polygonsTransitionDuration={200} onPolygonClick={handlePolygonClick} onPolygonHover={handlePolygonHover} pointsData={points} pointAltitude={0.035} pointColor={pointColor} pointRadius={0.3} pointResolution={20} pointsTransitionDuration={550} ringsData={paused ? [] : points} ringAltitude={0.025} ringColor={ringColor} ringMaxRadius={2.5} ringPropagationSpeed={0.75} ringRepeatPeriod={1250} ringResolution={96} animateIn={false} />}
+      : webgl && size.width > 0 && visualProfile && <Globe ref={globeRef} width={size.width} height={size.height} backgroundColor="rgba(0,0,0,0)" globeImageUrl={visualProfile.earthTextureUrl} bumpImageUrl={visualProfile.enhancedEffects ? '/textures/earth-topology.png' : '/textures/earth-topology.jpg'} globeMaterial={earthMaterial} showAtmosphere atmosphereColor={ATMOSPHERE_COLOR} atmosphereAltitude={visualProfile.enhancedEffects ? 0.18 : 0.2} onGlobeReady={handleReady} onGlobeClick={handleClick} onZoom={handleZoom} polygonsData={polygons} polygonCapColor={capColor} polygonSideColor={noSideWalls} polygonStrokeColor={strokeColor} polygonAltitude={altitude} polygonLabel={label} polygonsTransitionDuration={200} onPolygonClick={handlePolygonClick} onPolygonHover={handlePolygonHover} pointsData={points} pointAltitude={0.035} pointColor={pointColor} pointRadius={0.3} pointResolution={20} pointsTransitionDuration={550} ringsData={paused ? [] : points} ringAltitude={0.025} ringColor={ringColor} ringMaxRadius={2.5} ringPropagationSpeed={0.75} ringRepeatPeriod={1250} ringResolution={96} animateIn={false} />}
   </div>
+  {/* Outside the role="img" canvas wrapper so it stays an operable control for assistive tech. */}
+  {ready && webgl && <ZoomControl value={zoom} min={GLOBE_ZOOM.min} max={GLOBE_ZOOM.max} label="Globe zoom" onChange={zoomTo} />}
+  </>
 }
 
 function GlobeFallbackIcon() { return <svg viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="57" fill="none" stroke="currentColor" strokeWidth="2"/><ellipse cx="80" cy="80" rx="26" ry="57" fill="none" stroke="currentColor" strokeWidth="2"/><path d="M26 80h108M37 53h86M37 107h86" fill="none" stroke="currentColor" strokeWidth="2"/></svg> }

@@ -33,8 +33,13 @@ export function fitProjection(target: Polygonal, width: number, height: number, 
   const scale = Math.min((width - 2 * padding) / Math.max((maxLon - minLon) * xFactor, 1e-6), (height - 2 * padding) / Math.max(maxLat - minLat, 1e-6))
   const [centerLon, centerLat] = [(minLon + maxLon) / 2, (minLat + maxLat) / 2]
   const project = (lon: number, lat: number): [number, number] => [width / 2 + (unwrap(lon) - centerLon) * xFactor * scale, height / 2 - (lat - centerLat) * scale]
+  // Map coordinates back to [lon, lat], with longitude wrapped into [-180, 180).
+  const invert = (x: number, y: number): [number, number] => {
+    const lon = centerLon + (x - width / 2) / (xFactor * scale)
+    return [((lon + 540) % 360) - 180, Math.max(-90, Math.min(90, centerLat - (y - height / 2) / scale))]
+  }
   const path = (geometry: Polygonal) => rings(geometry).map((ring) => `M${ring.map(([lon, lat]) => project(lon, lat).map((value) => value.toFixed(1)).join(',')).join('L')}Z`).join('')
-  return { project, path, kmPerPixel: KM_PER_DEGREE / scale }
+  return { project, invert, path, kmPerPixel: KM_PER_DEGREE / scale }
 }
 
 // Largest 1/2/5 × 10ⁿ value that fits under `maxKm`, for a scale bar.

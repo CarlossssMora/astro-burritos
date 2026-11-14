@@ -209,15 +209,32 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .globe-canvas .float-tooltip-kap { padding: 6px 10px; border-radius: 8px; font: 600 13px/1.3 var(--font-body); color: var(--color-white); background: var(--color-deep-blue); }
 
 /* 2D area map */
-.area-map { position: relative; margin-top: 16px; border: 1px solid var(--border); border-radius: 16px; background: var(--muted); overflow: hidden; }
+.area-map { position: relative; margin-top: 16px; border: 1px solid var(--border); border-radius: 16px; background: color-mix(in srgb, var(--color-blue-yonder) 16%, var(--color-white)); overflow: hidden; } /* sea */
 .area-svg { display: block; width: 100%; height: auto; }
 .area-svg path, .area-svg circle { vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .area-context { fill: color-mix(in srgb, var(--color-electric-blue) 6%, var(--color-white)); stroke: color-mix(in srgb, var(--color-electric-blue) 25%, var(--color-white)); stroke-width: 1; }
 .area-shape { fill: color-mix(in srgb, var(--color-neon-blue) 14%, var(--color-white)); stroke: var(--primary); stroke-width: 2; }
-.area-inner { fill: none; stroke: color-mix(in srgb, var(--color-neon-blue) 40%, var(--color-white)); stroke-width: 1; }
+.area-inner { fill: transparent; stroke: color-mix(in srgb, var(--color-neon-blue) 40%, var(--color-white)); stroke-width: 1; } /* transparent, not none: the interior must take clicks */
+.area-neighbor { fill: var(--color-white); stroke: color-mix(in srgb, var(--color-electric-blue) 20%, var(--color-white)); stroke-width: 1; }
+.area-pick { cursor: pointer; transition: fill .12s; }
+.area-pick:hover { fill: color-mix(in srgb, var(--color-neon-blue) 24%, var(--color-white)); }
+.area-point { pointer-events: none; }
 .area-point { fill: var(--color-neon-yellow); stroke: var(--dot-ring); stroke-width: 2; }
 .area-scale { position: absolute; left: 4%; bottom: 12px; height: 8px; border: 2px solid var(--foreground); border-top: 0; }
 .area-scale span { position: absolute; left: 0; bottom: 10px; white-space: nowrap; font: 500 12px/1 var(--font-mono); color: var(--foreground); }
+
+/* Zoom slider (globe and 2D map): Deep Blue steps, Neon Blue fill, Neon Yellow thumb with a dark ring */
+.zoom-control { position: absolute; top: 10px; right: 10px; bottom: 10px; z-index: 2; width: 44px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 0; border: 1px solid var(--border); border-radius: 22px; background: color-mix(in srgb, var(--color-white) 90%, transparent); box-shadow: 0 1px 4px color-mix(in srgb, var(--color-deep-blue) 10%, transparent); }
+.zoom-step { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; border: 0; border-radius: 10px; background: var(--color-deep-blue); color: var(--color-white); transition: background-color .15s; }
+.zoom-step:not(:disabled):hover { background: var(--color-electric-blue); }
+/* Vertical native range: writing-mode turns it upright, direction: rtl puts the maximum at the top. */
+.zoom-range { flex: 1; min-height: 40px; inline-size: auto; block-size: 32px; margin: 0; writing-mode: vertical-lr; direction: rtl; appearance: none; -webkit-appearance: none; background: transparent; cursor: pointer; }
+.zoom-range::-webkit-slider-runnable-track { inline-size: 100%; block-size: 6px; border-radius: 3px; background: linear-gradient(to top, var(--primary) var(--fill), var(--border) var(--fill)); }
+.zoom-range::-webkit-slider-thumb { -webkit-appearance: none; inline-size: 20px; block-size: 20px; margin-inline-start: -7px; border-radius: 50%; background: var(--color-neon-yellow); border: 3px solid var(--color-deep-blue); }
+.zoom-range::-moz-range-track { inline-size: 6px; border-radius: 3px; background: var(--border); }
+.zoom-range::-moz-range-progress { inline-size: 6px; border-radius: 3px; background: var(--primary); }
+.zoom-range::-moz-range-thumb { inline-size: 14px; block-size: 14px; border-radius: 50%; background: var(--color-neon-yellow); border: 3px solid var(--color-deep-blue); }
+.zoom-readout { min-width: 38px; padding: 2px 4px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); text-align: center; font: 500 12px/1.2 var(--font-mono); color: var(--foreground); }
 .chart-line { stroke: var(--primary); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .trend-line { stroke: var(--color-rocket-red); stroke-width: 1.5; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; } /* was neon-yellow: ~1.1:1 on white cards */
 .chart-dot { fill: var(--card); stroke: var(--primary); stroke-width: 1; vector-effect: non-scaling-stroke; }

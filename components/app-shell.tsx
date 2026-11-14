@@ -78,7 +78,7 @@ export function AppShell() {
             <div className="globe-legend"><span className="legend-item"><span className="legend-point" /> SELECTED LOCATION</span><span className="legend-divider" /><span className="legend-note">No data overlays are shown until observations are verified.</span></div>
           </div>
           <TrendChart variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} onRetry={() => mutate()} />
-          <AreaMap region={region} />
+          <AreaMap region={region} onSelect={(next) => { setRegion(next); setAnalysisRequested(false) }} />
         </section>
 
         <EvidencePanel region={region} variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} />
