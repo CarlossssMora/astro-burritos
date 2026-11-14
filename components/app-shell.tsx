@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { ArrowUpRight, Globe, Info, MapPin, Navigation, Pause, Play, RotateCcw, Sparkles } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Info, MapPin, MapPinned, MousePointerClick, Navigation, Pause, Play, Rotate3d, RotateCcw, Sparkles, ZoomIn } from 'lucide-react'
 import { EarthGlobe } from '@/components/earth-globe'
 import { LocationSelector, type Region } from '@/components/location-selector'
 import { VariableSelector, type Variable } from '@/components/variable-selector'
 import { PeriodPicker } from '@/components/period-picker'
 import { TrendChart } from '@/components/trend-chart'
 import { AreaMap } from '@/components/area-map'
-import { EvidencePanel } from '@/components/evidence-panel'
+import { EvidencePanel, ResultsPanel } from '@/components/evidence-panel'
 import { DataSourceBadge } from '@/components/data-source-badge'
 import type { ClimateAnalysis } from '@/lib/nasa/types'
 
@@ -85,15 +85,17 @@ export function AppShell() {
             <header className="section-eyebrow panel-header"><span className="live-ring" /> GLOBAL VIEW</header>
             <div className="globe-head"><h2>One planet. <span>Countless signals.</span></h2><div className="globe-controls" aria-label="Globe controls"><button className="icon-button" type="button" onClick={() => setPaused(!paused)} aria-label={paused ? 'Resume globe rotation' : 'Pause globe rotation'} title={paused ? 'Resume rotation' : 'Pause rotation'}>{paused ? <Play size={16} /> : <Pause size={16} />}</button><button className="icon-button" type="button" onClick={() => setResetSignal((n) => n + 1)} aria-label="Reset globe view" title="Reset view"><RotateCcw size={16} /></button></div></div>
             <div className="globe-stage"><EarthGlobe region={region} paused={paused} resetSignal={resetSignal} onSelect={selectRegion} /></div>
-            <div className="globe-caption"><span><Globe size={16} /> DRAG TO ROTATE • SCROLL TO ZOOM • CLICK A COUNTRY, THEN A STATE</span><span className="globe-location"><MapPin size={16} /> {region.name}</span></div>
+            <div className="globe-caption"><ol className="globe-steps" aria-label="How to use the globe"><li><Rotate3d size={16} /> DRAG TO ROTATE</li><li><ArrowRight size={16} className="step-arrow" aria-hidden="true" /><ZoomIn size={16} /> SCROLL TO ZOOM</li><li><ArrowRight size={16} className="step-arrow" aria-hidden="true" /><MousePointerClick size={16} /> CLICK A COUNTRY</li><li><ArrowRight size={16} className="step-arrow" aria-hidden="true" /><MapPinned size={16} /> THEN A STATE</li></ol><span className="globe-location"><MapPin size={16} /> {region.name}</span></div>
             <div className="globe-legend"><span className="legend-item"><span className="legend-point" /> SELECTED LOCATION</span><span className="legend-divider" /><span className="legend-note">No data overlays are shown until observations are verified.</span></div>
           </div>
           <TrendChart variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} onRetry={() => mutate()} />
           <AreaMap region={region} />
         </section>
+
+        <ResultsPanel region={region} variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} />
       </section>
 
-      <EvidencePanel region={region} variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} />
+      <EvidencePanel variable={variable} analysis={analysis} />
 
       <footer className="app-footer"><DataSourceBadge /><span className="footer-center">Scientific evidence before visual certainty. • Earth imagery: NASA Blue Marble • Boundaries: Natural Earth</span><a href="https://power.larc.nasa.gov/" target="_blank" rel="noreferrer">NASA POWER project <ArrowUpRight size={16} /></a></footer>
     </main>
