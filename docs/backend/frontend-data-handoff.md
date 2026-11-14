@@ -4,7 +4,7 @@ Fecha del corte: 2026-11-14. Este documento describe únicamente el backend y lo
 
 ## Estado real del repositorio
 
-En este checkout la rama activa es `Guillermo`, en el commit `80bbc82`, limpia y sin merge en curso. El reporte adjunto menciona un `main` con `6fc03c6` y cinco conflictos `UU`; ese estado no existe en este checkout. El handoff se basa en el código que sí está presente aquí y conserva la regla de que `lat/lon` es un punto de análisis, no un promedio de país o estado.
+En este checkout la rama activa es `Guillermo`, en el commit base `26300d3`, limpia y sin merge en curso. El reporte adjunto menciona un `main` con `6fc03c6` y cinco conflictos `UU`; ese estado no existe en este checkout. El handoff se basa en el código que sí está presente aquí y conserva la regla de que `lat/lon` es un punto de análisis, no un promedio de país o estado.
 
 ## Qué existe hoy
 
@@ -154,6 +154,26 @@ Para una respuesta sin valores utilizables, `observations` y `annual` pueden est
 
 La ventana común debe calcularse como el mínimo de las coberturas completas de los productos seleccionados. Con el corte actual, el candidato de comparación POWER–IMERG es 2001–2024; no se debe usar 2025 hasta verificar que IMERG Final mensual tenga todos sus meses.
 
+## Política para periodos de ingesta desiguales
+
+Las fuentes no tienen que empezar el mismo día ni terminar el mismo año. EarthScope no debe resolver esa diferencia con una sola fecha global ni con imputaciones silenciosas. Cada adaptador debe entregar un manifiesto de cobertura con sus meses exactos (`YYYY-MM`), años completos, meses faltantes, resolución temporal y fecha de recuperación.
+
+El backend soporta tres modos explícitos:
+
+1. **`source-native`**: cada fuente conserva todo su periodo disponible. Sirve para explorar historia y cobertura; sus pendientes no deben compararse directamente si utilizan ventanas diferentes.
+2. **`common-complete-window` (modo recomendado para comparar)**: se intersectan los meses completos de todas las fuentes seleccionadas, se eliminan los años de frontera parciales y se elige el tramo continuo más largo. El mismo `startPeriod`/`endPeriod` se aplica a todas las series y a la prueba estadística.
+3. **`fixed-window`**: el usuario o el protocolo fija una ventana, por ejemplo 2001–2024. Si una fuente no cubre el intervalo con el umbral declarado, se marca `blocked-by-quality`; no se rellena ni se recorta en silencio.
+
+Reglas operativas:
+
+- Para tendencias anuales comparables se requieren los 12 meses del año en cada fuente. Un año incompleto no se convierte en cero ni se interpola por defecto.
+- El año parcial más reciente queda visible como cobertura provisional, pero no entra en agregados anuales ni en la ventana comparativa.
+- Si dos fuentes tienen un hueco interno, el algoritmo busca el tramo continuo común más largo; no concatena segmentos separados como si fueran una sola serie.
+- Si no existe una ventana común, el resultado es `no-overlap` y la interfaz debe mostrar las series por separado con sus periodos, no fabricar una comparación.
+- La visualización puede mostrar el periodo nativo completo en una vista de cobertura y, en otra, el recorte común para comparación. La etiqueta debe indicar siempre `native`, `common` o `fixed`.
+
+`lib/analysis/common-window.ts` implementa tanto la intersección anual como la mensual. `TemporalWindow` y `temporalPolicy` en `lib/analysis/types.ts` permiten transportar al frontend el modo usado, las fechas exactas, los periodos completos y las advertencias.
+
 ## Contrato futuro multi-fuente
 
 `EarthScopeDataBundle` en `lib/analysis/types.ts` ya define la forma futura:
@@ -168,6 +188,7 @@ El frontend debe consumir `series[].observations` y `analyses[]` cuando exista e
 ## Utilidades backend disponibles
 
 - `lib/analysis/common-window.ts` calcula la intersección de años completos entre manifiestos y selecciona el tramo continuo más largo. No inventa el año final: requiere que cada adaptador entregue sus años completos.
+- `lib/analysis/common-window.ts` también calcula la intersección mensual y descarta años frontera que no tienen enero–diciembre completos en todas las fuentes.
 - `lib/analysis/multiple-testing.ts` aplica Benjamini–Hochberg a una familia declarada y devuelve `qValue`; el endpoint POWER unitario todavía no tiene una familia multi-serie sobre la cual aplicarlo.
 - `lib/analysis/robust-trend.ts` calcula la pendiente de Sen, Mann–Kendall base y el diagnóstico de autocorrelación lag-1. La corrección autocorrelacionada permanece como gate científico antes de publicar una clasificación robusta.
 
@@ -185,7 +206,7 @@ El frontend debe consumir `series[].observations` y `analyses[]` cuando exista e
 
 ## Verificación actual
 
-- `pnpm test`: 8 pruebas pasan.
+- `pnpm test`: 12 pruebas pasan.
 - `pnpm exec tsc --noEmit`: pasa.
 - `npm run build`: pasa.
 - La API POWER fue validada previamente con una consulta real de Puebla.

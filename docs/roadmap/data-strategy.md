@@ -49,6 +49,16 @@ Every source will pass through the same five layers. Raw data is immutable; clea
 - Use this dashboard classification, not as a formal test of equality: **agreement with trend** means both intervals exclude zero with the same sign and the interval of the paired difference includes zero; **agreement without detectable trend** means both intervals include zero; **sign discrepancy** means both intervals exclude zero with opposite signs; **magnitude discrepancy** means the signs match but the paired-difference interval excludes zero; everything else is **inconclusive**.
 - Report agreement/disagreement between products; never average products with different physical meanings.
 
+### Temporal alignment policy
+
+Different ingestion periods are expected and are part of the data quality model. Every source manifest must retain exact available months, complete years, missing periods and the retrieval date. The backend exposes three analysis modes:
+
+- `source-native`: preserve each source's full history for coverage exploration; trends from different windows are not treated as directly comparable.
+- `common-complete-window`: the default for cross-source comparisons. Intersect exact monthly coverage, drop partial boundary years, and select the longest contiguous run of complete calendar years shared by all selected sources.
+- `fixed-window`: use only a pre-registered interval. A source that cannot meet the completeness rule is `blocked-by-quality`; it is never silently truncated or imputed.
+
+The visualization should show both a coverage timeline and the selected analysis window. A partial current year remains visible as provisional coverage but is excluded from annual trend statistics. If no common window exists, the comparison is `no-overlap` and each source is rendered independently.
+
 ## Frontend-ready data contract
 
 The canonical TypeScript contract lives in `lib/analysis/types.ts` as `EarthScopeDataBundle`. It is designed to be serializable JSON:
