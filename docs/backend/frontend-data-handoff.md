@@ -17,7 +17,7 @@ Dashboard interactivo con los mismos datos (privado; pedir acceso al dueño del 
 
 ## 2. Dónde está cada archivo
 
-### 2.1 Incluidos en este commit
+### 2.1 Documentación y datos de referencia (docs/backend/)
 
 | Ruta | Qué contiene | Uso en la interfaz |
 |---|---|---|
@@ -37,6 +37,8 @@ Dashboard interactivo con los mismos datos (privado; pedir acceso al dueño del 
 | docs/backend/data/sources.json | Evaluación de las fuentes externas (sección 9) | Panel de procedencia |
 | docs/backend/data/corrections.json | Correcciones respecto a la versión 1 de la auditoría | Referencia |
 | docs/backend/analysis/ | Scripts en Python estándar que generan los JSON y este documento | No se usa en la interfaz; implementación de referencia para el backend |
+| docs/backend/api-v2.md | Guía de la API v2: endpoints, campos, filtros, reglas de presentación, mapa y errores | Documento principal para consumir los datos procesados |
+| docs/backend/samples/ | Respuestas reales de la API v2 (Puebla, Tehuacán, Tlaxcala) | Desarrollar y probar la interfaz sin red |
 
 Los JSON son una instantánea del 2026-11-14 con la forma `{rows, meta}`. Sirven de referencia y de datos de ejemplo; la interfaz en producción debe consumir la API, no estos archivos.
 
@@ -57,10 +59,26 @@ Los JSON son una instantánea del 2026-11-14 con la forma `{rows, meta}`. Sirven
 | components/trend-chart.tsx | main (vigente) | Gráfica anual: usa annual[], slopePerYear e intercept (ver notas en 10.1) |
 | components/evidence-panel.tsx | main (vigente) | Panel estadístico y de procedencia |
 | components/variable-selector.tsx, period-picker.tsx, location-selector.tsx | main (vigente) | Controles de variable, periodo (2001–2024) y ubicación |
+| app/api/variables/route.ts, app/api/point/route.ts, app/api/region/route.ts | Guillermo (API v2) | Endpoints de catálogo, punto (gráficas) y región (mapa) |
+| lib/api/v2.ts | Guillermo (API v2) | Tipos PointResponse, RegionResponse y VariablesResponse para importar en la interfaz |
+| lib/variables/catalog.ts | Guillermo (API v2) | Catálogo de variables: etiquetas es/en, unidades, clase, disponibilidad y política de tendencia |
+| lib/analysis/annual-rules.ts, robust-stats.ts, robust-assessment.ts, region.ts; lib/nasa/power.ts; lib/api/*-service.ts | Guillermo (API v2) | Limpieza, agregación, estadística robusta, cuadrícula y llamadas a POWER |
 | lib/geo.ts | Solo main | Fronteras Natural Earth y proyección del mapa 2D (no sirven para agregación científica) |
 | docs/science/methodology.md, docs/science/validation-protocol.md | Guillermo | Protocolo científico (methodology.md aún dice 90%, ver A1) |
 
 La interfaz vigente está en `main`; los componentes de la rama Guillermo son una versión anterior. Los tipos con `autocorrelation`, la ventana común y BH solo existen en Guillermo.
+
+### 2.3 API v2: datos ya procesados para la interfaz
+
+Las variables seleccionadas en este reporte se procesan en el servidor con la misma limpieza que temperatura y lluvia (años 12/12, sin imputar) y con un perfil propio por variable: escala del cambio (absoluta, % de la media 1991–2020 o puntos porcentuales), método principal (OLS o Sen), anomalías, límites físicos, sub-series por temporada y umbral de relevancia. Guía completa: `docs/backend/api-v2.md`.
+
+| Endpoint | Devuelve | Uso |
+|---|---|---|
+| GET /api/variables | Catálogo de 13 variables, excluidas con motivo, reglas y textos de veredicto | Selectores, leyendas y filtros |
+| GET /api/point | Series anuales y mensuales, climatología 1991–2020 y evaluación de tendencia de las 13 variables en una celda | Gráficas y panel de evidencia |
+| POST /api/region | Celdas de una variable recortadas al polígono del estado o país, tendencia por celda con FDR de campo y serie regional ponderada | Mapa y gráfica regional |
+
+`/api/series` y `/api/climate` no cambian. Variables en el mapa: T2M, T2M_RANGE, TXx, TNn, PRECTOTCORR, PREC_MJJASO, QV2M, RH2M y GWETROOT. Solo en punto (requieren datos diarios): TX, TN, TX90p y TN90p.
 
 ## 3. Estado del código
 
