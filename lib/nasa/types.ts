@@ -31,14 +31,25 @@ export type AnnualObservation = {
 export type TrendResult = {
   nYears: number
   slopePerYear: number | null
+  senSlopePerYear: number | null
   intercept: number | null
   pValue: number | null
+  mannKendall: MannKendallResult | null
   confidenceInterval95: [number, number] | null
   rSquared: number | null
   significantAt05: boolean | null
   method: string
   warnings: string[]
   completeness: number | null
+}
+
+export type MannKendallResult = {
+  tau: number | null
+  score: number | null
+  pValue: number | null
+  significantAt05: boolean | null
+  method: string
+  warnings: string[]
 }
 
 export type ClimateAnalysis = NasaPowerResult & {

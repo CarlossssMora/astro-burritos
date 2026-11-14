@@ -19,6 +19,11 @@ export type CanonicalLocation = {
   latitude: number
   longitude: number
   regionId?: string
+  support?: {
+    type: 'point' | 'grid-cell' | 'polygon' | 'station'
+    nominalResolutionKm?: number
+    geometryId?: string
+  }
 }
 
 export type CanonicalObservation = {

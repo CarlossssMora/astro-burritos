@@ -1,4 +1,5 @@
 import type { AnnualObservation, NasaObservation, TrendResult } from '@/lib/nasa/types'
+import { calculateMannKendall, calculateSenSlope } from './robust-trend'
 
 const EPSILON = 1e-12
 
@@ -114,7 +115,7 @@ export function calculateTrend(annual: AnnualObservation[]): TrendResult {
   const completeness = completeYears.length ? Math.min(...completeYears.map((observation) => observation.completeness)) : null
   if (completeYears.length < 3) {
     warnings.push('At least three sufficiently complete years are required for a trend estimate.')
-    return { nYears: completeYears.length, slopePerYear: null, intercept: null, pValue: null, confidenceInterval95: null, rSquared: null, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness }
+    return { nYears: completeYears.length, slopePerYear: null, senSlopePerYear: null, intercept: null, pValue: null, mannKendall: null, confidenceInterval95: null, rSquared: null, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness }
   }
 
   const x = completeYears.map((observation) => observation.year)
@@ -125,7 +126,7 @@ export function calculateTrend(annual: AnnualObservation[]): TrendResult {
   const sxy = x.reduce((sum, value, index) => sum + (value - xMean) * (y[index] - yMean), 0)
   if (sxx <= EPSILON) {
     warnings.push('The selected years do not provide enough variation for a slope estimate.')
-    return { nYears: completeYears.length, slopePerYear: null, intercept: null, pValue: null, confidenceInterval95: null, rSquared: null, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness }
+    return { nYears: completeYears.length, slopePerYear: null, senSlopePerYear: calculateSenSlope(completeYears), intercept: null, pValue: null, mannKendall: calculateMannKendall(completeYears), confidenceInterval95: null, rSquared: null, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness }
   }
 
   const slope = sxy / sxx
@@ -138,7 +139,7 @@ export function calculateTrend(annual: AnnualObservation[]): TrendResult {
 
   if (residualSumOfSquares <= EPSILON) {
     warnings.push('The residual variance is zero; p-value and confidence interval are not defined.')
-    return { nYears: completeYears.length, slopePerYear: slope, intercept, pValue: null, confidenceInterval95: null, rSquared, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness }
+    return { nYears: completeYears.length, slopePerYear: slope, senSlopePerYear: calculateSenSlope(completeYears), intercept, pValue: null, mannKendall: calculateMannKendall(completeYears), confidenceInterval95: null, rSquared, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness }
   }
 
   const residualVariance = residualSumOfSquares / degreesOfFreedom
@@ -147,5 +148,5 @@ export function calculateTrend(annual: AnnualObservation[]): TrendResult {
   const pValue = Math.min(1, Math.max(0, 2 * (1 - studentTCdf(Math.abs(tStatistic), degreesOfFreedom))))
   const criticalValue = studentTQuantile(0.975, degreesOfFreedom)
   const confidenceInterval95: [number, number] = [slope - criticalValue * slopeStandardError, slope + criticalValue * slopeStandardError]
-  return { nYears: completeYears.length, slopePerYear: slope, intercept, pValue, confidenceInterval95, rSquared, significantAt05: pValue < 0.05, method: 'Ordinary least squares on annual aggregates; classical errors assume independent residuals', warnings, completeness }
+  return { nYears: completeYears.length, slopePerYear: slope, senSlopePerYear: calculateSenSlope(completeYears), intercept, pValue, mannKendall: calculateMannKendall(completeYears), confidenceInterval95, rSquared, significantAt05: pValue < 0.05, method: 'Ordinary least squares on annual aggregates; classical errors assume independent residuals', warnings, completeness }
 }

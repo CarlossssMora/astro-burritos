@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { aggregateAnnual, calculateTrend } from '../../lib/analysis/trend'
+import { calculateMannKendall, calculateSenSlope } from '../../lib/analysis/robust-trend'
 import { parsePowerMonthlyPayload } from '../../lib/nasa/client'
 import type { AnnualObservation, NasaObservation } from '../../lib/nasa/types'
 
@@ -60,6 +61,9 @@ describe('ordinary least squares trend', () => {
     expect(trend.slopePerYear).toBeCloseTo(0.5)
     expect(trend.rSquared).toBeCloseTo(1)
     expect(trend.pValue).toBeNull()
+    expect(trend.senSlopePerYear).toBeCloseTo(0.5)
+    expect(trend.mannKendall?.tau).toBe(1)
+    expect(trend.mannKendall?.pValue).toBeLessThan(0.05)
   })
 
   it('does not manufacture significance for a constant series', () => {
@@ -68,6 +72,7 @@ describe('ordinary least squares trend', () => {
     expect(trend.rSquared).toBeNull()
     expect(trend.pValue).toBeNull()
     expect(trend.significantAt05).toBeNull()
+    expect(trend.mannKendall?.pValue).toBeNull()
   })
 
   it('excludes years below the 90 percent completeness threshold', () => {
@@ -75,5 +80,15 @@ describe('ordinary least squares trend', () => {
     const trend = calculateTrend([...Array.from({ length: 3 }, (_, index) => annualObservation(2001 + index, index)), incomplete])
     expect(trend.nYears).toBe(3)
     expect(trend.warnings[0]).toContain('less than 90% monthly')
+  })
+})
+
+describe('robust trend estimators', () => {
+  it('computes Sen slope and a monotonic Mann–Kendall signal', () => {
+    const points = Array.from({ length: 6 }, (_, index) => ({ year: 2001 + index, value: 3 + 2 * index }))
+    expect(calculateSenSlope(points)).toBe(2)
+    const result = calculateMannKendall(points)
+    expect(result.tau).toBe(1)
+    expect(result.significantAt05).toBe(true)
   })
 })

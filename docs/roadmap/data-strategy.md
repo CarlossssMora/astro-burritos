@@ -4,11 +4,11 @@
 
 EarthScope will answer one auditable question:
 
-> **Between 2001 and the latest complete year, what measurable changes in temperature, precipitation and land/water indicators appear in Puebla and Tehuacán, how large are those changes, where do the products agree or disagree, and how certain is each result?**
+> **Between 2001 and the latest complete year, which temperature, precipitation and vegetation trends are detectable in NASA and reference products over Puebla and Tehuacán, how large are they, where do products agree or disagree after spatial harmonization, and how robust are they to the time window and missing-data tests?**
 
-This objective is intentionally narrower than “explain climate change.” EarthScope will describe signals, compare independent products, expose uncertainty and provenance, and avoid causal attribution, alerts and unsupported forecasts.
+This objective is intentionally narrower than “explain climate change.” EarthScope will describe signals detectable in products, compare products with explicitly partial independence, expose uncertainty and provenance, and avoid causal attribution, alerts and unsupported forecasts. A comparison is not proof that either product is the truth.
 
-The first geographic study is Puebla, Mexico, with Tehuacán as a contrasting semi-arid region. A later region can be added only when its geometry, coverage and source comparability are documented.
+The first geographic study is Puebla, Mexico, with Tehuacán as a contrasting semi-arid region. “Puebla” and “Tehuacán” will mean declared municipal or study-area geometries, while the POWER result will retain the coarser MERRA-2 grid-cell footprint. A later region can be added only when its geometry, coverage and source comparability are documented.
 
 ## Mandatory source plan
 
@@ -17,15 +17,15 @@ The next data milestone must use more than NASA POWER and must include the follo
 | Priority | Source | Role in EarthScope | Variable family | Important boundary |
 | --- | --- | --- | --- | --- |
 | Current | [NASA POWER Monthly API](https://power.larc.nasa.gov/docs/services/api/temporal/monthly/) | Baseline point series | T2M, PRECTOTCORR | MERRA-2-derived meteorology; not direct satellite measurement |
-| Required 1 | [NASA GPM IMERG](https://gpm.nasa.gov/data/imerg), accessed and explored through [Giovanni](https://giovanni.gsfc.nasa.gov/giovanni/) | Independent precipitation comparison | Monthly precipitation accumulation/rate | Select one exact Final product/version and preserve its native units; never merge it into POWER silently |
+| Required 1 | [NASA GPM IMERG](https://gpm.nasa.gov/data/imerg), accessed and explored through [Giovanni](https://giovanni.gsfc.nasa.gov/giovanni/) | Higher-resolution precipitation comparison | Monthly precipitation accumulation/rate | Independence is partial because IMERG Final uses gauge information; select exact product/version, preserve units and never merge into POWER silently |
 | Required 2 | [NASA AppEEARS](https://appeears.earthdatacloud.nasa.gov/) | Land-surface time series with quality layers | MODIS/VIIRS vegetation index and/or land-surface temperature | Earthdata authentication and asynchronous extraction may be required; retain QA flags and product version |
 | Required 3 | [NASA GIBS](https://nasa-gibs.github.io/gibs-api-docs/) | True visual context and time-aware map layers | Satellite imagery or pre-rendered science layers | GIBS tiles are visualizations; their colors are not numeric observations for trend tests |
 | Required 4 | [NOAA Climate Data Online](https://www.ncei.noaa.gov/cdo-web/webservices) | Independent station validation where coverage exists | Station temperature/precipitation | API token, station metadata and inhomogeneity/relocation checks are required |
 | Audit | [KNMI Climate Explorer](https://climexp.knmi.nl/) | External sanity check for monthly anomalies/trends | Station, gridded observation and reanalysis references | Audit/reference only until access and licensing are documented |
-| Conditional | [SWOT](https://www.asc-csa.gc.ca/eng/satellites/swot/) | Water-focused case study | Water surface elevation, area, slope or discharge-derived products | Shorter and irregular coverage; separate water module, never treated as a substitute for rainfall |
+| Deferred | [SWOT](https://www.asc-csa.gc.ca/eng/satellites/swot/) | Possible later water case study | Water surface elevation, area, slope or discharge-derived products | Removed from the MVP: short/irregular coverage and weak fit for Tehuacán/Puebla water questions |
 | Conditional | [RADARSAT/Geo.ca and the SAR tutorial](https://github.com/asc-csa/Synthetic_Aperture_Radar_Tutorial) | Later land/wetness/change case in suitable Canadian regions | SAR backscatter or derived land/water classes | Geographic scope and licensing must be confirmed before inclusion |
 
-Giovanni, AppEEARS and GIBS are access/analysis/visualization services as well as entry points. The canonical bundle must record the underlying dataset and product, not only the service name.
+Giovanni, AppEEARS and GIBS are access/analysis/visualization services as well as entry points. The canonical bundle must record the underlying dataset and product, not only the service name. POWER and IMERG are complementary products, not fully independent ground truth: both can incorporate gauge information or related atmospheric constraints.
 
 ## Deep processing pipeline
 
@@ -34,16 +34,17 @@ Every source will pass through the same five layers. Raw data is immutable; clea
 1. **Ingest/raw:** save the exact request or download URL, response headers, product/version, retrieval time, source model, native resolution, coordinate reference system, time standard, license/attribution and a checksum. Store the original file or a documented external identifier.
 2. **Quality control:** validate schema, coordinates, timestamps, duplicate keys, fill values, non-numeric values, impossible ranges, source-specific QA flags, missing periods, spatial masks and station metadata. Outliers are flagged first, never silently deleted. No missing value becomes zero.
 3. **Harmonization:** convert units only with a documented rule; normalize timestamps to an explicit standard; retain native values beside normalized values; define whether an input is a rate, mean, accumulation, index or model/reanalysis estimate; map each pixel/point to a named region and preserve the source grid.
-4. **Scientific features:** generate monthly and annual summaries, completeness, anomalies against a fixed baseline, seasonal aggregates and spatial summaries. Use area-weighting for polygons and document pixel inclusion. Do not compare products until period, units, support, spatial scale and meaning are compatible.
+4. **Scientific features:** generate monthly and annual summaries, completeness, anomalies against a fixed baseline, seasonal aggregates and spatial summaries. Use area-weighting for polygons and document pixel inclusion. Do not compare products until period, units, support, spatial scale and meaning are compatible. For POWER, show the native grid-cell footprint instead of implying municipal precision.
 5. **Analysis/delivery:** produce trend, uncertainty, cross-source comparison and visualization-ready artifacts. Every number carries a `seriesId`, source, unit, period, quality summary and transformation chain so frontend can render it without reconstructing science.
 
-### Planned statistical safeguards
+### Pre-registered statistical safeguards
 
-- Keep the current OLS trend as the transparent baseline.
-- Add seasonal-cycle removal and a fixed climatology before comparing monthly signals.
-- Add Mann–Kendall and Sen's slope as robustness checks when the series supports them.
-- Estimate uncertainty with autocorrelation-aware methods (for example HAC/Newey–West or block bootstrap) and report which method was used.
-- Run sensitivity analyses for completeness thresholds, baseline period, spatial mask and source choice.
+- Keep OLS as the transparent baseline. Its slope is evaluated with a two-sided t-test and a 95% confidence interval, with the independent-residual assumption shown as a limitation.
+- Add Mann–Kendall with Sen's slope as a non-parametric robustness pair. Use autocorrelation-aware/pre-whitened variants or block bootstrap when diagnostics require it.
+- Remove the seasonal cycle with a fixed climatology before comparing monthly signals. For precipitation, report both annual totals and May–October wet-season totals.
+- Use two windows chosen before inspecting results: 1981–latest complete year for POWER sensitivity and 2001–latest common complete year for MODIS/IMERG comparisons. “Latest complete year” is derived from each source manifest, never hardcoded in the UI.
+- Apply Benjamini–Hochberg false-discovery-rate control to the pre-declared family of site × variable × source hypotheses. Report raw p-values and adjusted q-values.
+- Use the following dashboard classification, not as a formal test of equality: **agreement** means same slope sign and overlapping 95% intervals; **discrepancy** means opposite signs with both trends significant; everything else is **inconclusive**. Formal source differences require paired anomalies on common support and an uncertainty-aware test.
 - Report agreement/disagreement between products; never average products with different physical meanings.
 
 ## Frontend-ready data contract
@@ -59,7 +60,7 @@ The canonical TypeScript contract lives in `lib/analysis/types.ts` as `EarthScop
     "objective": "<objective>",
     "researchQuestion": "<question>",
     "regions": [],
-    "baselinePeriod": { "startYear": 2001, "endYear": 2024 }
+    "baselinePeriod": { "startYear": 2001, "endYear": "<latest complete common year>" }
   },
   "sources": [],
   "series": [],
@@ -96,11 +97,12 @@ No future values or projection layer are being fabricated in the current branch.
 - Add raw snapshot manifests and checksums.
 - Gate: every observation can be traced back to a source request/download and native unit.
 
-### Phase B — Independent precipitation
+### Phase B — Precipitation comparison
 
 - Select and validate one IMERG Final monthly product/version through Giovanni.
-- Compare it with POWER using the same period and region, but retain two separate series.
-- Audit units, gauge adjustment, coverage, missingness and spatial support.
+- Define Puebla/Tehuacán study polygons and aggregate both products to the same declared support; retain the native POWER cell as a separate context.
+- Compare anomalies and trends, not absolute totals alone. Retain two separate series and label their partial dependence.
+- Audit units, gauge adjustment, coverage, missingness, spatial support and wet-season behavior.
 - Gate: a second person can reproduce the comparison from the manifest.
 
 ### Phase C — Land surface and validation
@@ -110,10 +112,10 @@ No future values or projection layer are being fabricated in the current branch.
 - Use KNMI Climate Explorer as an external trend/anomaly audit.
 - Gate: quality flags, station metadata and cross-source disagreement are visible in the data bundle.
 
-### Phase D — Map context and water extension
+### Phase D — Map context and scope control
 
 - Add only validated GIBS layers with date/product compatibility; keep them visual/contextual.
-- Evaluate SWOT for a named lake, reservoir or river with sufficient repeated observations.
+- Keep SWOT outside the MVP unless a named water feature, repeated observations and a defensible question are approved.
 - Evaluate RADARSAT/Geo.ca only for a region and question where SAR is physically relevant.
 - Gate: each layer has a product-specific legend, date, resolution and attribution.
 
@@ -122,3 +124,37 @@ No future values or projection layer are being fabricated in the current branch.
 - Implement the regression artifact and holdout evaluation off-screen first.
 - Have the science reviewer approve diagnostics, intervals and wording.
 - Gate: no projection is displayed when validation or quality checks fail.
+
+## Validation and model comparison protocol
+
+Trend significance and prediction skill are different questions and will be reported separately.
+
+### 1. Trend evidence
+
+For every pre-declared series, report the OLS slope, t-test p-value, 95% confidence interval, Mann–Kendall p-value, Sen's slope, number of valid periods, completeness and all warnings. A significant trend in one test but not the other is a robustness disagreement, not a forced PASS/FAIL.
+
+### 2. Retrospective prediction tests
+
+No future curve is accepted because it looks plausible. For each variable with enough history:
+
+- use rolling-origin or blocked temporal holdouts;
+- fit only on the past and score on the withheld future;
+- report MAE, RMSE, bias and 95% interval coverage;
+- compare the model against a persistence baseline and a seasonal-climatology baseline;
+- run the same evaluation with the last year, one year block and random monthly masks removed;
+- retain the deleted values only in a sealed evaluation set and never train on them;
+- repeat for both time windows when the source supports them.
+
+t-tests, Mann–Kendall and confidence intervals validate trend evidence and uncertainty; they do not replace out-of-sample forecast metrics.
+
+### 3. Cross-source verification
+
+There is no universal “truth source” for every Earth-system variable. The comparison hierarchy is:
+
+1. harmonize spatial support and time period;
+2. compare anomalies and seasonal totals in common units;
+3. evaluate bias, correlation, MAE and paired differences;
+4. use NOAA station data as an external reference where station metadata and coverage are adequate;
+5. use NASA product validation documentation and sensitivity across products as evidence of confidence, not as proof of correctness.
+
+If a product has no adequate reference at the target scale, the result is labeled `not independently validated` rather than assigned a confidence score.
