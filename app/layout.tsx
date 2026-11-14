@@ -12,20 +12,11 @@ export const metadata: Metadata = {
   title: 'EarthScope — Hidden Climate Signals',
   description: 'Explore historical climate trends with transparent evidence and NASA Earth data. An independent NASA Space Apps Challenge project.',
   generator: 'v0.app',
+  // Official NASA Space Apps small logo (spaceappschallenge.org/brand): black for light tabs, white for dark tabs.
   icons: {
     icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
+      { url: '/brand/space-apps-small-black.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: light)' },
+      { url: '/brand/space-apps-small-white.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: dark)' },
     ],
     apple: '/apple-icon.png',
   },
