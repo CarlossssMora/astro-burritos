@@ -1,0 +1,7 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-140.68,-17.78],[-140.79,-17.86],[-140.78,-17.75],[-140.68,-17.78]]]},"properties":{"adm0_a3":"PYF","name":"Tuamotu-Gambier","latitude":-16.7377,"longitude":-143.144}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-149.18,-17.73],[-149.19,-17.87],[-149.28,-17.84],[-149.34,-17.72],[-149.45,-17.76],[-149.59,-17.73],[-149.64,-17.6],[-149.6,-17.53],[-149.43,-17.5],[-149.35,-17.54],[-149.3,-17.71],[-149.18,-17.73]]]},"properties":{"adm0_a3":"PYF","name":"Windward Islands","latitude":-17.7462,"longitude":-149.519}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-151.48,-16.74],[-151.35,-16.86],[-151.46,-16.9],[-151.48,-16.74]]]},"properties":{"adm0_a3":"PYF","name":"Leeward Islands","latitude":-16.6692,"longitude":-151.495}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-144.28,-27.58],[-144.3,-27.63],[-144.35,-27.62],[-144.34,-27.56],[-144.28,-27.58]]]},"properties":{"adm0_a3":"PYF","name":"Austral Islands","latitude":-22.5218,"longitude":-151.324}},
+{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[-138.84,-9.74],[-138.87,-9.79],[-139.16,-9.82],[-139.05,-9.7],[-138.84,-9.74]]],[[[-140.05,-8.82],[-140.1,-8.92],[-140.23,-8.93],[-140.22,-8.78],[-140.05,-8.82]]]]},"properties":{"adm0_a3":"PYF","name":"Marquesas Islands","latitude":-9.75565,"longitude":-139.037}}
+]}

@@ -1,6 +1,6 @@
 'use client'
 
-import { ChartNoAxesCombined, Download, LoaderCircle } from 'lucide-react'
+import { ChartNoAxesColumn, Download, LoaderCircle, TrendingUp } from 'lucide-react'
 import type { Variable } from '@/components/variable-selector'
 import type { ClimateAnalysis } from '@/lib/nasa/types'
 
@@ -25,7 +25,7 @@ export function TrendChart({ variable, startYear, endYear, analysisRequested, an
 
   return <section className="chart-panel panel" aria-labelledby="trend-title">
     <div className="chart-header">
-      <div><span className="section-eyebrow"><ChartNoAxesCombined size={16} /> HISTORICAL OBSERVATIONS</span><h2 id="trend-title">{label} by year <span className="range-label">{startYear} — {endYear}</span></h2></div>
+      <div><span className="section-eyebrow"><TrendingUp size={16} /> HISTORICAL OBSERVATIONS</span><h2 id="trend-title">{label} by year <span className="range-label">{startYear} — {endYear}</span></h2></div>
       <button className="export-button" type="button" disabled={!analysis?.observations.length} onClick={exportCsv} aria-label="Export NASA POWER observations as CSV"><Download size={16} /> Export CSV</button>
     </div>
     <div className="chart-empty" role="status" aria-live="polite">
@@ -39,7 +39,7 @@ export function TrendChart({ variable, startYear, endYear, analysisRequested, an
         <div className="chart-axis"><span>{points[0]?.year}</span><span>{analysis?.coverage.start ?? '—'} to {analysis?.coverage.end ?? '—'}</span><span>{points.at(-1)?.year}</span></div>
         <p className="chart-disclaimer">Annual summaries are descriptive aggregations of returned daily values. The trend estimate uses years with at least 90% daily coverage and does not establish causation.</p>
       </div> : <>
-        <div className="chart-empty-icon"><ChartNoAxesCombined size={24} /></div><strong>{analysisRequested ? 'No observations returned for this period' : 'Historical observations will appear here'}</strong><p>{analysisRequested ? 'NASA POWER returned no usable daily values for the selected parameter and range.' : 'Choose a location and variable, then analyze to request NASA POWER daily observations. No measurements or statistics are fabricated.'}</p><div className="chart-axis"><span>{startYear}</span><span>{Math.round((startYear + endYear) / 2)}</span><span>{endYear}</span></div>
+        <div className="chart-empty-icon"><ChartNoAxesColumn size={16} /></div><strong>{analysisRequested ? 'No observations returned for this period' : 'Historical observations will appear here'}</strong><p>{analysisRequested ? 'NASA POWER returned no usable daily values for the selected parameter and range.' : 'Choose a location and variable, then analyze to request NASA POWER daily observations. No measurements or statistics are fabricated.'}</p><div className="chart-axis"><span>{startYear}</span><span>{Math.round((startYear + endYear) / 2)}</span><span>{endYear}</span></div>
       </>}
     </div>
   </section>

@@ -1,0 +1,13 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-157.93,-21.88],[-157.89,-21.92],[-157.95,-21.93],[-157.93,-21.88]]]},"properties":{"adm0_a3":"COK","name":"Mangaia","latitude":-21.9367,"longitude":-157.909}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-157.71,-19.77],[-157.71,-19.84],[-157.74,-19.82],[-157.71,-19.77]]]},"properties":{"adm0_a3":"COK","name":"Mitiaro","latitude":-19.8389,"longitude":-157.707}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-157.94,-8.98],[-157.98,-8.98],[-158,-8.95],[-157.94,-8.97],[-157.94,-8.98]]]},"properties":{"adm0_a3":"COK","name":"Penrhyn","latitude":-8.99614,"longitude":-157.956}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-159.8,-21.19],[-159.74,-21.2],[-159.74,-21.25],[-159.83,-21.24],[-159.8,-21.19]]]},"properties":{"adm0_a3":"COK","name":"Rarotonga","latitude":-21.2088,"longitude":-159.789}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-157.31,-20.16],[-157.34,-20.18],[-157.35,-20.14],[-157.31,-20.16]]]},"properties":{"adm0_a3":"COK","name":"Mauke","latitude":-20.1852,"longitude":-157.312}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-158.08,-19.99],[-158.12,-20.02],[-158.12,-19.97],[-158.08,-19.99]]]},"properties":{"adm0_a3":"COK","name":"Atiu","latitude":-20.0232,"longitude":-158.089}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-158.93,-19.27],[-158.94,-19.26],[-158.95,-19.25],[-158.96,-19.25],[-158.95,-19.24],[-158.94,-19.26],[-158.93,-19.27]]]},"properties":{"adm0_a3":"COK","name":"Aitutaki","latitude":-19.2709,"longitude":-158.892}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-165.82,-10.88],[-165.81,-10.88],[-165.81,-10.89],[-165.82,-10.88]]]},"properties":{"adm0_a3":"COK","name":"Pukapuka","latitude":-10.9163,"longitude":-165.802}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-160.99,-10.38],[-160.98,-10.38],[-160.94,-10.42],[-160.99,-10.38]]]},"properties":{"adm0_a3":"COK","name":"Manihiki","latitude":-10.4098,"longitude":-160.963}},
+{"type":"Feature","geometry":null,"properties":{"adm0_a3":"COK","name":"Rakahanga","latitude":-10.0641,"longitude":-161.065}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-159.79,-18.83],[-159.78,-18.88],[-159.8,-18.87],[-159.79,-18.83]]]},"properties":{"adm0_a3":"COK","name":"Palmerston","latitude":-18.8968,"longitude":-159.771}}
+]}

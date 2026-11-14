@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-81.14,19.35],[-81.14,19.29],[-81.3,19.31],[-81.29,19.37],[-81.14,19.35]]]},"properties":{"adm0_a3":"CYM","name":"Cayman Islands","latitude":19.3167,"longitude":-81.2592}}
+]}

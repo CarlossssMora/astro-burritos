@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { ArrowUpRight, Crosshair, Globe2, Info, MapPin, Pause, Play, RotateCcw, SlidersHorizontal, Sparkles } from 'lucide-react'
+import { ArrowUpRight, Globe, Info, MapPin, Navigation, Pause, Play, RotateCcw, Sparkles } from 'lucide-react'
 import { EarthGlobe } from '@/components/earth-globe'
 import { LocationSelector, type Region } from '@/components/location-selector'
 import { VariableSelector, type Variable } from '@/components/variable-selector'
 import { PeriodPicker } from '@/components/period-picker'
 import { TrendChart } from '@/components/trend-chart'
+import { AreaMap } from '@/components/area-map'
 import { EvidencePanel } from '@/components/evidence-panel'
 import { DataSourceBadge } from '@/components/data-source-badge'
 import type { ClimateAnalysis } from '@/lib/nasa/types'
@@ -20,7 +21,7 @@ const fetcher = async (url: string): Promise<ClimateAnalysis> => {
 }
 
 export function AppShell() {
-  const [region, setRegion] = useState<Region>({ name: 'Puebla, Mexico', lat: 19.04, lon: -98.20 })
+  const [region, setRegion] = useState<Region>({ name: 'Puebla, Mexico', lat: 19.04, lon: -98.20, country: 'MEX', state: 'Puebla' })
   const [variable, setVariable] = useState<Variable>('temperature')
   const [startYear, setStartYear] = useState(2001)
   const [endYear, setEndYear] = useState(2024)
@@ -40,8 +41,8 @@ export function AppShell() {
     <main className="app-shell">
       <header className="topbar">
         <a className="brand" href="#main" aria-label="EarthScope home">
-          <span className="brand-mark"><Globe2 size={24} /></span>
-          <span className="brand-name">earth<span>scope</span></span>
+          <span className="brand-mark"><Globe size={24} /></span>
+          <span className="brand-stack"><span className="brand-name">earthscope</span><span className="brand-kicker">SPACE APPS CONTEXT</span></span>
           <span className="brand-divider" />
           <span className="brand-subtitle">CLIMATE SIGNALS, IN CONTEXT</span>
         </a>
@@ -54,7 +55,7 @@ export function AppShell() {
 
       <section className="workspace" id="main" aria-label="Climate signal analysis workspace">
         <aside className="filters-panel panel">
-          <div className="section-eyebrow"><SlidersHorizontal size={16} /> ANALYSIS SETUP</div>
+          <div className="section-eyebrow"><Navigation size={16} /> ANALYSIS SETUP</div>
           <h1>Find a signal.<br /><span>Understand its story.</span></h1>
           <p className="intro-copy">Explore historical climate observations for a place you care about.</p>
 
@@ -62,24 +63,28 @@ export function AppShell() {
           <VariableSelector value={variable} onChange={(next) => { setVariable(next); setAnalysisRequested(false) }} />
           <PeriodPicker startYear={startYear} endYear={endYear} onStartChange={(year) => { setStartYear(year); setAnalysisRequested(false) }} onEndChange={(year) => { setEndYear(year); setAnalysisRequested(false) }} />
 
-          <button className="analyze-button" type="button" onClick={analyze}><Sparkles size={16} /> Analyze region <span>→</span></button>
-          <div className="setup-note"><Info size={16} /><span>Analysis runs when a verified data connection is available.</span></div>
-          <div className="panel-footnote"><span className="step-number">01</span><span>SELECT LOCATION &amp; CLIMATE VARIABLE</span></div>
+          <div className="setup-actions">
+            <button className="analyze-button" type="button" onClick={analyze}><Sparkles size={16} /> Analyze region <span>→</span></button>
+            <div className="setup-note"><Info size={16} /><span>Analysis runs when a verified data connection is available.</span></div>
+            <div className="panel-footnote"><span className="step-number">01</span><span>SELECT LOCATION &amp; CLIMATE VARIABLE</span></div>
+          </div>
         </aside>
 
         <section className="center-column" aria-label="Interactive Earth and historical trend">
           <div className="globe-panel panel">
             <div className="globe-head"><div><span className="section-eyebrow"><span className="live-ring" /> GLOBAL VIEW</span><h2>One planet. <span>Countless signals.</span></h2></div><div className="globe-controls" aria-label="Globe controls"><button className="icon-button" type="button" onClick={() => setPaused(!paused)} aria-label={paused ? 'Resume globe rotation' : 'Pause globe rotation'} title={paused ? 'Resume rotation' : 'Pause rotation'}>{paused ? <Play size={16} /> : <Pause size={16} />}</button><button className="icon-button" type="button" onClick={() => setResetSignal((n) => n + 1)} aria-label="Reset globe view" title="Reset view"><RotateCcw size={16} /></button></div></div>
-            <div className="globe-stage"><EarthGlobe region={region} paused={paused} resetSignal={resetSignal} onSelect={(lat, lon) => { setRegion({ name: `Selected coordinates`, lat, lon }); setAnalysisRequested(false) }} /><div className="globe-caption"><span><Crosshair size={16} /> DRAG TO ROTATE • SCROLL TO ZOOM • CLICK TO SELECT</span><span className="globe-location"><MapPin size={16} /> {region.name}</span></div></div>
+            <div className="globe-stage"><EarthGlobe region={region} paused={paused} resetSignal={resetSignal} onSelect={(next) => { setRegion(next); setAnalysisRequested(false) }} /></div>
+            <div className="globe-caption"><span><Globe size={16} /> DRAG TO ROTATE • SCROLL TO ZOOM • CLICK A COUNTRY, THEN A STATE</span><span className="globe-location"><MapPin size={16} /> {region.name}</span></div>
             <div className="globe-legend"><span className="legend-item"><span className="legend-point" /> SELECTED LOCATION</span><span className="legend-divider" /><span className="legend-note">No data overlays are shown until observations are verified.</span></div>
           </div>
           <TrendChart variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} />
+          <AreaMap region={region} />
         </section>
 
         <EvidencePanel region={region} variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} />
       </section>
 
-      <footer className="app-footer"><DataSourceBadge /><span className="footer-center">Scientific evidence before visual certainty. • Earth imagery: NASA Blue Marble</span><a href="https://power.larc.nasa.gov/" target="_blank" rel="noreferrer">NASA POWER project <ArrowUpRight size={16} /></a></footer>
+      <footer className="app-footer"><DataSourceBadge /><span className="footer-center">Scientific evidence before visual certainty. • Earth imagery: NASA Blue Marble • Boundaries: Natural Earth</span><a href="https://power.larc.nasa.gov/" target="_blank" rel="noreferrer">NASA POWER project <ArrowUpRight size={16} /></a></footer>
     </main>
   )
 }

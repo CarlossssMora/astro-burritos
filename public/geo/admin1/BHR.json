@@ -1,0 +1,7 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[50.5,26.24],[50.59,26.24],[50.55,26.19],[50.5,26.24]]]},"properties":{"adm0_a3":"BHR","name":"Al Manāmah","latitude":26.2204,"longitude":50.5777}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[50.49,26.05],[50.45,26.15],[50.5,26.24],[50.55,26.19],[50.52,26.13],[50.49,26.05]]]},"properties":{"adm0_a3":"BHR","name":"Ash Shamālīyah","latitude":26.1624,"longitude":50.4868}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[50.62,26.1],[50.6,25.85],[50.55,25.85],[50.46,25.99],[50.49,26.05],[50.52,26.13],[50.62,26.1]]]},"properties":{"adm0_a3":"BHR","name":"Al Janūbīyah","latitude":25.9688,"longitude":50.5622}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[50.55,26.19],[50.62,26.1],[50.52,26.13],[50.55,26.19]]]},"properties":{"adm0_a3":"BHR","name":"Al Wusţá","latitude":26.1373,"longitude":50.5738}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[50.6,26.28],[50.66,26.28],[50.65,26.24],[50.61,26.24],[50.6,26.28]]]},"properties":{"adm0_a3":"BHR","name":"Al Muḩarraq","latitude":26.261,"longitude":50.6376}}
+]}
