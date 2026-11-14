@@ -1,0 +1,13 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-59.55,13.24],[-59.52,13.22],[-59.54,13.18],[-59.55,13.18],[-59.58,13.21],[-59.55,13.24]]]},"properties":{"adm0_a3":"BRB","name":"Saint Joseph","latitude":13.2118,"longitude":-59.5495}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-59.57,13.29],[-59.55,13.24],[-59.58,13.21],[-59.6,13.22],[-59.61,13.24],[-59.57,13.29]]]},"properties":{"adm0_a3":"BRB","name":"Saint Andrew","latitude":13.2551,"longitude":-59.5759}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-59.58,13.3],[-59.57,13.29],[-59.61,13.24],[-59.65,13.24],[-59.65,13.27],[-59.58,13.3]]]},"properties":{"adm0_a3":"BRB","name":"Saint Peter","latitude":13.2679,"longitude":-59.6109}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-59.65,13.27],[-59.63,13.34],[-59.58,13.3],[-59.65,13.27]]]},"properties":{"adm0_a3":"BRB","name":"Saint Lucy","latitude":13.3177,"longitude":-59.615}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-59.64,13.14],[-59.65,13.24],[-59.61,13.24],[-59.6,13.22],[-59.61,13.15],[-59.64,13.14]]]},"properties":{"adm0_a3":"BRB","name":"Saint James","latitude":13.192,"longitude":-59.6259}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-59.6,13.08],[-59.64,13.14],[-59.61,13.15],[-59.59,13.16],[-59.57,13.11],[-59.6,13.08]]]},"properties":{"adm0_a3":"BRB","name":"Saint Michael","latitude":13.118,"longitude":-59.6047}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-59.48,13.09],[-59.6,13.08],[-59.57,13.11],[-59.51,13.13],[-59.48,13.09]]]},"properties":{"adm0_a3":"BRB","name":"Christ Church","latitude":13.0873,"longitude":-59.538}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-59.47,13.19],[-59.48,13.09],[-59.51,13.13],[-59.51,13.15],[-59.47,13.19]]]},"properties":{"adm0_a3":"BRB","name":"Saint Philip","latitude":13.1368,"longitude":-59.47}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-59.52,13.22],[-59.47,13.19],[-59.51,13.15],[-59.54,13.18],[-59.52,13.22]]]},"properties":{"adm0_a3":"BRB","name":"Saint John","latitude":13.1795,"longitude":-59.5039}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-59.54,13.18],[-59.51,13.15],[-59.51,13.13],[-59.57,13.11],[-59.59,13.16],[-59.55,13.18],[-59.54,13.18]]]},"properties":{"adm0_a3":"BRB","name":"Saint George","latitude":13.1489,"longitude":-59.5479}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-59.58,13.21],[-59.55,13.18],[-59.59,13.16],[-59.61,13.15],[-59.6,13.22],[-59.58,13.21]]]},"properties":{"adm0_a3":"BRB","name":"Saint Thomas","latitude":13.1877,"longitude":-59.5898}}
+]}

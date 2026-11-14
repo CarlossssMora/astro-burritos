@@ -1,0 +1,5 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-178.13,-14.31],[-178.16,-14.31],[-178.19,-14.25],[-178.13,-14.26],[-178.13,-14.31]]]},"properties":{"adm0_a3":"WLF","name":"Sigave","latitude":-14.2659,"longitude":-178.161}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-178.13,-14.26],[-178.11,-14.28],[-178.13,-14.31],[-178.13,-14.26]]]},"properties":{"adm0_a3":"WLF","name":"Alo","latitude":-14.3029,"longitude":-178.094}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-176.16,-13.21],[-176.13,-13.26],[-176.18,-13.34],[-176.2,-13.29],[-176.16,-13.21]]]},"properties":{"adm0_a3":"WLF","name":"`Uvea","latitude":-13.2768,"longitude":-176.169}}
+]}

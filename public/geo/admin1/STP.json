@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[6.68,0.41],[6.75,0.34],[6.74,0.22],[6.66,0.11],[6.52,0.03],[6.46,0.22],[6.53,0.35],[6.68,0.41]]]},"properties":{"adm0_a3":"STP","name":"São Tomé","latitude":0.234574,"longitude":6.61185}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[7.46,1.67],[7.43,1.56],[7.33,1.57],[7.4,1.7],[7.46,1.67]]]},"properties":{"adm0_a3":"STP","name":"Príncipe","latitude":1.60769,"longitude":7.39374}}
+]}

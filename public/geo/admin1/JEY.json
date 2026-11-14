@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-2.08,49.26],[-2.02,49.17],[-2.17,49.18],[-2.24,49.25],[-2.08,49.26]]]},"properties":{"adm0_a3":"JEY","name":"Jersey","latitude":49.2298,"longitude":-2.12454}}
+]}

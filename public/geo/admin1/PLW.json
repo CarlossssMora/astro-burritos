@@ -1,0 +1,18 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.27,7.07],[134.28,7.02],[134.24,7.01],[134.27,7.07]]]},"properties":{"adm0_a3":"PLW","name":"Peleliu","latitude":7.02649,"longitude":134.259}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.46,7.29],[134.46,7.26],[134.4,7.25],[134.44,7.29],[134.46,7.29]]]},"properties":{"adm0_a3":"PLW","name":"Koror","latitude":7.26579,"longitude":134.446}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.53,7.52],[134.55,7.58],[134.62,7.57],[134.61,7.54],[134.59,7.51],[134.58,7.47],[134.53,7.52]]]},"properties":{"adm0_a3":"PLW","name":"Ngeremlengui","latitude":7.53794,"longitude":134.575}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.49,7.47],[134.53,7.52],[134.58,7.47],[134.57,7.43],[134.49,7.47]]]},"properties":{"adm0_a3":"PLW","name":"Ngatpang","latitude":7.47929,"longitude":134.552}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.51,7.4],[134.49,7.47],[134.57,7.43],[134.51,7.4]]]},"properties":{"adm0_a3":"PLW","name":"Aimeliik","latitude":7.43236,"longitude":134.533}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.59,7.42],[134.51,7.4],[134.57,7.43],[134.59,7.42]]]},"properties":{"adm0_a3":"PLW","name":"Airai","latitude":7.39952,"longitude":134.571}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.63,7.49],[134.59,7.42],[134.57,7.43],[134.58,7.47],[134.59,7.51],[134.63,7.49]]]},"properties":{"adm0_a3":"PLW","name":"Ngchesar","latitude":7.46286,"longitude":134.597}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.63,7.53],[134.63,7.49],[134.59,7.51],[134.61,7.54],[134.63,7.53]]]},"properties":{"adm0_a3":"PLW","name":"Melekeok","latitude":7.51682,"longitude":134.613}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.66,7.59],[134.63,7.53],[134.61,7.54],[134.62,7.57],[134.62,7.6],[134.66,7.59]]]},"properties":{"adm0_a3":"PLW","name":"Ngiwal","latitude":7.57313,"longitude":134.636}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.66,7.69],[134.66,7.59],[134.62,7.6],[134.62,7.63],[134.64,7.68],[134.66,7.69]]]},"properties":{"adm0_a3":"PLW","name":"Ngaraard","latitude":7.65055,"longitude":134.65}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.64,7.68],[134.62,7.72],[134.64,7.73],[134.66,7.69],[134.64,7.68]]]},"properties":{"adm0_a3":"PLW","name":"Ngarchelong","latitude":7.70686,"longitude":134.641}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.55,7.58],[134.62,7.63],[134.62,7.6],[134.62,7.57],[134.55,7.58]]]},"properties":{"adm0_a3":"PLW","name":"Ngardmau","latitude":7.60128,"longitude":134.597}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[131.14,3.05],[131.18,3.06],[131.18,3.03],[131.14,3.02],[131.14,3.05]]]},"properties":{"adm0_a3":"PLW","name":"Hatobohei","latitude":2.96318,"longitude":131.794}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[132.22,5.29],[132.21,5.31],[132.23,5.3],[132.22,5.29]]]},"properties":{"adm0_a3":"PLW","name":"Sonsorol","latitude":5.28876,"longitude":132.204}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.16,6.88],[134.14,6.92],[134.17,6.92],[134.16,6.88]]]},"properties":{"adm0_a3":"PLW","name":"Angaur","latitude":6.91388,"longitude":134.158}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.71,8.1],[134.73,8.08],[134.72,8.06],[134.69,8.08],[134.71,8.1]]]},"properties":{"adm0_a3":"PLW","name":"Kayangel","latitude":8.0705,"longitude":134.711}}
+]}

@@ -1,0 +1,6 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[145.21,14.18],[145.21,14.11],[145.13,14.15],[145.21,14.18]]]},"properties":{"adm0_a3":"MNP","name":"Rota","latitude":14.1465,"longitude":145.205}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[145.65,15.07],[145.67,14.98],[145.61,14.93],[145.58,15.02],[145.65,15.07]]]},"properties":{"adm0_a3":"MNP","name":"Tinian","latitude":14.9995,"longitude":145.622}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[145.79,15.27],[145.74,15.14],[145.7,15.2],[145.79,15.27]]]},"properties":{"adm0_a3":"MNP","name":"Saipan","latitude":15.1921,"longitude":145.744}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[145.77,18.18],[145.84,18.13],[145.74,18.09],[145.77,18.18]]]},"properties":{"adm0_a3":"MNP","name":"Northern Islands","latitude":16.3573,"longitude":145.674}}
+]}

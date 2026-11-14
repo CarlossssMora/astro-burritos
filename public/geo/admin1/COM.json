@@ -1,0 +1,5 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[43.79,-12.31],[43.68,-12.36],[43.63,-12.25],[43.79,-12.31]]]},"properties":{"adm0_a3":"COM","name":"Moûhîlî","latitude":-12.3178,"longitude":43.7462}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[44.53,-12.23],[44.53,-12.35],[44.33,-12.24],[44.48,-12.09],[44.53,-12.23]]]},"properties":{"adm0_a3":"COM","name":"Andjouân","latitude":-12.226,"longitude":44.4518}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[43.47,-11.82],[43.37,-11.86],[43.26,-11.82],[43.24,-11.67],[43.28,-11.38],[43.4,-11.42],[43.38,-11.61],[43.47,-11.82]]]},"properties":{"adm0_a3":"COM","name":"Andjazîdja","latitude":-11.6952,"longitude":43.3378}}
+]}

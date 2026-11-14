@@ -1,0 +1,13 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-60.98,14.04],[-60.9,14.07],[-60.94,14.02],[-60.98,14.04]]]},"properties":{"adm0_a3":"LCA","name":"Gros Islet","latitude":14.0664,"longitude":-60.9446}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-61.03,13.99],[-60.98,14.04],[-60.94,14.02],[-60.94,13.98],[-60.96,13.9],[-60.96,13.88],[-60.98,13.89],[-61.03,13.99]]]},"properties":{"adm0_a3":"LCA","name":"Castries","latitude":14.0004,"longitude":-60.9749}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-61.07,13.91],[-61.03,13.99],[-60.98,13.89],[-61.07,13.91]]]},"properties":{"adm0_a3":"LCA","name":"Anse-la-Raye","latitude":13.935,"longitude":-61.0189}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-61.07,13.79],[-61.07,13.91],[-60.98,13.89],[-60.96,13.88],[-60.96,13.85],[-60.98,13.84],[-61.07,13.79]]]},"properties":{"adm0_a3":"LCA","name":"Soufrière","latitude":13.8545,"longitude":-61.0447}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-61.02,13.76],[-61.07,13.79],[-60.98,13.84],[-60.98,13.83],[-61.02,13.76]]]},"properties":{"adm0_a3":"LCA","name":"Choiseul","latitude":13.7912,"longitude":-61.0296}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-60.97,13.73],[-61.02,13.76],[-60.98,13.83],[-60.97,13.73]]]},"properties":{"adm0_a3":"LCA","name":"Laborie","latitude":13.7676,"longitude":-60.9867}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-60.92,13.77],[-60.97,13.73],[-60.98,13.83],[-60.98,13.84],[-60.92,13.77]]]},"properties":{"adm0_a3":"LCA","name":"Vieux Fort","latitude":13.7762,"longitude":-60.9438}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-60.89,13.83],[-60.92,13.77],[-60.98,13.84],[-60.96,13.85],[-60.89,13.83]]]},"properties":{"adm0_a3":"LCA","name":"Micoud","latitude":13.8159,"longitude":-60.918}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-60.89,13.91],[-60.89,13.83],[-60.96,13.85],[-60.96,13.88],[-60.96,13.9],[-60.89,13.91]]]},"properties":{"adm0_a3":"LCA","name":"Praslin","latitude":13.8674,"longitude":-60.918}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-60.88,13.98],[-60.89,13.91],[-60.96,13.9],[-60.94,13.98],[-60.88,13.98]]]},"properties":{"adm0_a3":"LCA","name":"Dennery","latitude":13.9425,"longitude":-60.9052}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-60.9,14.07],[-60.88,13.98],[-60.94,13.98],[-60.94,14.02],[-60.9,14.07]]]},"properties":{"adm0_a3":"LCA","name":"Dauphin","latitude":14.0176,"longitude":-60.9062}}
+]}

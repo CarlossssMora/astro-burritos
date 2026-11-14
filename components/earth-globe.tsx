@@ -5,15 +5,27 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import type { GlobeMethods } from 'react-globe.gl'
 import type { Region } from '@/components/location-selector'
+import { useCountries, useStates, type CountryFeature, type StateFeature } from '@/lib/geo'
 
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false, loading: () => <div className="globe-loading" role="status">Preparing interactive Earth…</div> })
 
-// WebGL needs literal colors, not CSS variables: neon-yellow and blue-yonder from the brand theme.
+// WebGL needs literal colors, not CSS variables: neon-yellow, blue-yonder and white from the brand theme.
 const POINT_COLOR = '#EAFE07'
 const ATMOSPHERE_COLOR = '#2E96F5'
 const MAX_PIXEL_RATIO = 2
 const EARTH_TEXTURE_2K = '/textures/earth-blue-marble.jpg'
 const EARTH_TEXTURE_4K = '/textures/earth-blue-marble-4k.jpg'
+const CAP_COLOR = 'rgba(255, 255, 255, 0.02)'
+const HOVER_CAP_COLOR = 'rgba(46, 150, 245, 0.4)'
+const SELECTED_CAP_COLOR = 'rgba(234, 254, 7, 0.35)'
+const STROKE_COLOR = 'rgba(255, 255, 255, 0.6)'
+// Accessors must be functions: a bare string is read as a property name of each feature, not as a color.
+const strokeColor = () => STROKE_COLOR
+const noSideWalls = () => '' // falsy: flat caps, no extruded sides
+
+type Area = CountryFeature | StateFeature
+const isState = (area: Area): area is StateFeature => 'adm0_a3' in area.properties
+const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 const pointColor = () => POINT_COLOR
 const ringColor = () => (t: number) => `rgba(234, 254, 7, ${Math.max(0, 0.72 * (1 - t))})`
 
@@ -162,7 +174,7 @@ async function installGlobeEnhancements(globe: GlobeMethods, earthMaterial: THRE
   }
 }
 
-export function EarthGlobe({ region, paused, resetSignal, onSelect }: { region: Region; paused: boolean; resetSignal: number; onSelect: (lat: number, lon: number) => void }) {
+export function EarthGlobe({ region, paused, resetSignal, onSelect }: { region: Region; paused: boolean; resetSignal: number; onSelect: (region: Region) => void }) {
   const globeRef = useRef<GlobeMethods | undefined>(undefined)
   const wrapRef = useRef<HTMLDivElement>(null)
   const cloudMeshRef = useRef<THREE.Mesh | null>(null)
@@ -172,6 +184,9 @@ export function EarthGlobe({ region, paused, resetSignal, onSelect }: { region: 
   const [size, setSize] = useState({ width: 0, height: 0 })
   const [visualProfile, setVisualProfile] = useState<VisualProfile | null>(null)
   const earthMaterial = useMemo(() => new THREE.MeshPhongMaterial({ color: 0x000000, specular: new THREE.Color('#102435'), shininess: 72 }), [])
+  const [hovered, setHovered] = useState<Area | null>(null)
+  const countries = useCountries().data?.features
+  const states = useStates(region.country).data?.features
 
   useEffect(() => setWebgl(hasWebGL()), [])
 
@@ -275,13 +290,32 @@ export function EarthGlobe({ region, paused, resetSignal, onSelect }: { region: 
   }, [region.lat, region.lon, resetSignal, ready])
 
   const handleReady = useCallback(() => setReady(true), [])
-  const handleClick = useCallback(({ lat, lng }: { lat: number; lng: number }) => onSelect(Number(lat.toFixed(2)), Number(lng.toFixed(2))), [onSelect])
+  const handleClick = useCallback(({ lat, lng }: { lat: number; lng: number }) => onSelect({ name: 'Selected coordinates', lat: Number(lat.toFixed(2)), lon: Number(lng.toFixed(2)) }), [onSelect])
   const points = useMemo(() => [{ lat: region.lat, lng: region.lon }], [region.lat, region.lon])
 
-  return <div ref={wrapRef} className="globe-canvas" role="img" aria-label="Interactive Earth globe. Drag to rotate, scroll to zoom, and select a location.">
+  // Countries everywhere, plus the selected country's states drawn just above them: one click picks a
+  // country (and loads its states), the next picks a state. The clicked spot is the analysis point.
+  const polygons = useMemo<Area[]>(() => [...(countries ?? []), ...(states ?? [])], [countries, states])
+  const countryName = useCallback((code: string) => countries?.find((country) => country.properties.ADM0_A3 === code)?.properties.NAME ?? code, [countries])
+  const isSelected = useCallback((area: Area) => isState(area) ? area.properties.adm0_a3 === region.country && area.properties.name === region.state : area.properties.ADM0_A3 === region.country && !region.state, [region.country, region.state])
+  const capColor = useCallback((area: object) => area === hovered ? HOVER_CAP_COLOR : isSelected(area as Area) ? SELECTED_CAP_COLOR : CAP_COLOR, [hovered, isSelected])
+  const altitude = useCallback((area: object) => (isState(area as Area) ? 0.012 : 0.006) + (area === hovered ? 0.006 : 0), [hovered])
+  const label = useCallback((area: object) => {
+    const feature = area as Area
+    return escapeHtml(isState(feature) ? `${feature.properties.name} • ${countryName(feature.properties.adm0_a3)}` : feature.properties.NAME)
+  }, [countryName])
+  const handlePolygonClick = useCallback((area: object, _event: MouseEvent, { lat, lng }: { lat: number; lng: number }) => {
+    const feature = area as Area
+    const point = { lat: Number(lat.toFixed(2)), lon: Number(lng.toFixed(2)) }
+    if (isState(feature)) onSelect({ name: `${feature.properties.name}, ${countryName(feature.properties.adm0_a3)}`, ...point, country: feature.properties.adm0_a3, state: feature.properties.name })
+    else onSelect({ name: feature.properties.NAME, ...point, country: feature.properties.ADM0_A3 })
+  }, [countryName, onSelect])
+  const handlePolygonHover = useCallback((area: object | null) => setHovered(area as Area | null), [])
+
+  return <div ref={wrapRef} className="globe-canvas" role="img" aria-label="Interactive Earth globe. Drag to rotate, scroll to zoom, click a country and then a state to select it.">
     {webgl === false
       ? <div className="globe-fallback" role="alert"><div className="fallback-globe"><GlobeFallbackIcon /></div><p>Interactive globe unavailable</p><span>Your browser could not start WebGL. Use the location selector to explore a region.</span><button type="button" onClick={() => setWebgl(hasWebGL())}>Retry globe</button></div>
-      : webgl && size.width > 0 && visualProfile && <Globe ref={globeRef} width={size.width} height={size.height} backgroundColor="rgba(0,0,0,0)" globeImageUrl={visualProfile.earthTextureUrl} bumpImageUrl={visualProfile.enhancedEffects ? '/textures/earth-topology.png' : '/textures/earth-topology.jpg'} globeMaterial={earthMaterial} showAtmosphere atmosphereColor={ATMOSPHERE_COLOR} atmosphereAltitude={visualProfile.enhancedEffects ? 0.18 : 0.2} onGlobeReady={handleReady} onGlobeClick={handleClick} pointsData={points} pointAltitude={0.035} pointColor={pointColor} pointRadius={0.3} pointResolution={20} pointsTransitionDuration={550} ringsData={paused ? [] : points} ringAltitude={0.025} ringColor={ringColor} ringMaxRadius={2.5} ringPropagationSpeed={0.75} ringRepeatPeriod={1250} ringResolution={96} animateIn={false} />}
+      : webgl && size.width > 0 && visualProfile && <Globe ref={globeRef} width={size.width} height={size.height} backgroundColor="rgba(0,0,0,0)" globeImageUrl={visualProfile.earthTextureUrl} bumpImageUrl={visualProfile.enhancedEffects ? '/textures/earth-topology.png' : '/textures/earth-topology.jpg'} globeMaterial={earthMaterial} showAtmosphere atmosphereColor={ATMOSPHERE_COLOR} atmosphereAltitude={visualProfile.enhancedEffects ? 0.18 : 0.2} onGlobeReady={handleReady} onGlobeClick={handleClick} polygonsData={polygons} polygonCapColor={capColor} polygonSideColor={noSideWalls} polygonStrokeColor={strokeColor} polygonAltitude={altitude} polygonLabel={label} polygonsTransitionDuration={200} onPolygonClick={handlePolygonClick} onPolygonHover={handlePolygonHover} pointsData={points} pointAltitude={0.035} pointColor={pointColor} pointRadius={0.3} pointResolution={20} pointsTransitionDuration={550} ringsData={paused ? [] : points} ringAltitude={0.025} ringColor={ringColor} ringMaxRadius={2.5} ringPropagationSpeed={0.75} ringRepeatPeriod={1250} ringResolution={96} animateIn={false} />}
   </div>
 }
 

@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-56.15,46.79],[-56.17,46.76],[-56.24,46.77],[-56.19,46.81],[-56.15,46.79]]]},"properties":{"adm0_a3":"SPM","name":"Saint-Pierre","latitude":46.7795,"longitude":-56.1918}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-56.27,46.9],[-56.34,46.95],[-56.4,47.11],[-56.25,47.05],[-56.31,46.98],[-56.27,46.9]]]},"properties":{"adm0_a3":"SPM","name":"Miquelon-Langlade","latitude":47.0461,"longitude":-56.3418}}
+]}

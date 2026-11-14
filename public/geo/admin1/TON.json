@@ -1,0 +1,7 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-173.96,-18.57],[-173.96,-18.66],[-174.06,-18.66],[-174.01,-18.58],[-173.96,-18.57]]]},"properties":{"adm0_a3":"TON","name":"Vava'u","latitude":-18.6118,"longitude":-173.988}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-174.91,-21.29],[-174.91,-21.44],[-174.98,-21.4],[-174.91,-21.29]]]},"properties":{"adm0_a3":"TON","name":"Eua","latitude":-21.3672,"longitude":-174.941}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-175.07,-21.12],[-175.15,-21.27],[-175.33,-21.17],[-175.25,-21.11],[-175.15,-21.17],[-175.07,-21.12]]]},"properties":{"adm0_a3":"TON","name":"Tongatapu","latitude":-21.1718,"longitude":-175.155}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-175.07,-19.71],[-175.05,-19.78],[-175.09,-19.79],[-175.1,-19.72],[-175.07,-19.71]]]},"properties":{"adm0_a3":"TON","name":"Ha'apai","latitude":-19.757,"longitude":-174.317}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-175.63,-15.56],[-175.64,-15.62],[-175.69,-15.6],[-175.63,-15.56]]]},"properties":{"adm0_a3":"TON","name":"Niuas","latitude":-15.9558,"longitude":-173.757}}
+]}

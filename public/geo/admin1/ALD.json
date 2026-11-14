@@ -1,0 +1,13 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[20.28,60.14],[20.27,60.09],[20.2,60.09],[20.22,60.15],[20.28,60.14]]]},"properties":{"adm0_a3":"ALD","name":"Lumparland","latitude":60.1022,"longitude":20.2285}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[19.64,60.22],[19.67,60.16],[19.54,60.13],[19.51,60.18],[19.64,60.22]]]},"properties":{"adm0_a3":"ALD","name":"Eckerö","latitude":60.2169,"longitude":19.5905}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[20.43,60.27],[20.44,60.25],[20.39,60.2],[20.38,60.27],[20.43,60.27]]]},"properties":{"adm0_a3":"ALD","name":"Vårdö","latitude":60.2456,"longitude":20.4053}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[20.82,60.23],[20.78,60.26],[20.85,60.27],[20.82,60.23]]]},"properties":{"adm0_a3":"ALD","name":"Kumlinge","latitude":60.2647,"longitude":20.8067}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[19.91,60.1],[19.81,60.15],[19.94,60.19],[20.03,60.14],[19.97,60.09],[19.94,60.11],[19.91,60.1]]]},"properties":{"adm0_a3":"ALD","name":"Jomala","latitude":60.1395,"longitude":19.8953}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[19.97,60.09],[19.91,60.1],[19.94,60.11],[19.97,60.09]]]},"properties":{"adm0_a3":"ALD","name":"Mariehamn","latitude":60.0903,"longitude":19.9417}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[20.98,59.94],[20.93,59.94],[20.93,59.96],[20.98,59.94]]]},"properties":{"adm0_a3":"ALD","name":"Kökar","latitude":59.923,"longitude":20.8903}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[20.28,59.98],[20.34,60.02],[20.4,59.98],[20.28,59.98]]]},"properties":{"adm0_a3":"ALD","name":"Föglö","latitude":60.0019,"longitude":20.3479}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[20.68,60.13],[20.64,60.13],[20.65,60.15],[20.68,60.13]]]},"properties":{"adm0_a3":"ALD","name":"Sottunga","latitude":60.1333,"longitude":20.6633}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[20.03,60.06],[20.19,60.07],[20.12,59.99],[20.03,60.06]]]},"properties":{"adm0_a3":"ALD","name":"Lemland","latitude":60.0449,"longitude":20.1496}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[21.09,60.48],[21.1,60.46],[21.06,60.45],[21.06,60.47],[21.09,60.48]]]},"properties":{"adm0_a3":"ALD","name":"Brändö","latitude":60.4104,"longitude":21.048}}
+]}
