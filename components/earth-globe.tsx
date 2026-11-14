@@ -12,13 +12,17 @@ const Globe = dynamic(() => import('react-globe.gl'), { ssr: false, loading: () 
 // WebGL needs literal colors, not CSS variables: neon-yellow, blue-yonder and white from the brand theme.
 const POINT_COLOR = '#EAFE07'
 const ATMOSPHERE_COLOR = '#2E96F5'
-// Light and specular tints for the enhanced day/night look (physical lighting, not UI colors).
-const NIGHT_AMBIENT_TINT = '#6d8fbd'
-const SUN_TINT = '#fff4dd'
+// Ocean specular tints for the enhanced profile (physical shading, not UI colors).
 const OCEAN_SPECULAR_LOADING = '#102435' // muted until the water mask arrives, so the whole sphere doesn't shine
 const OCEAN_SPECULAR = '#18334a'
-// Fixed world-space sun for day/night. Puebla's default view lands on the day side (dot ≈ 0.70).
-const SUN_POSITION = new THREE.Vector3(-140, 80, 120)
+// DAY/NIGHT — disabled 2026-11-14, kept for later. The city lights in earth-night.jpg are 1–2-texel dots on a
+// dim blue night-Earth; at globe zoom mipmapping averages them away, so the night side read as plain dark.
+// To re-enable: uncomment these constants, the night block in installGlobeEnhancements and the lighting
+// branch in the `ready` effect, ideally with a black-background city-lights texture (e.g. NASA Black Marble).
+// const NIGHT_AMBIENT_TINT = '#6d8fbd'
+// const SUN_TINT = '#fff4dd'
+// // Fixed world-space sun. Puebla's default view lands on the day side (dot ≈ 0.70).
+// const SUN_POSITION = new THREE.Vector3(-140, 80, 120)
 // The enhanced profile renders at up to 2× device pixels; the basic one stays at 1.5× (≈44% fewer pixels).
 const MAX_PIXEL_RATIO = 2
 const BASIC_PIXEL_RATIO = 1.5
@@ -95,12 +99,12 @@ async function installGlobeEnhancements(globe: GlobeMethods, earthMaterial: THRE
 
   const loader = new THREE.TextureLoader()
   let waterTexture: THREE.Texture
-  let nightTexture: THREE.Texture
+  // let nightTexture: THREE.Texture // DAY/NIGHT (disabled)
   let cloudTexture: THREE.Texture
   try {
-    [waterTexture, nightTexture, cloudTexture] = await Promise.all([
+    [waterTexture, cloudTexture] = await Promise.all([
       loader.loadAsync('/textures/earth-water.png'),
-      loader.loadAsync('/textures/earth-night.jpg'),
+      // loader.loadAsync('/textures/earth-night.jpg'), // DAY/NIGHT (disabled)
       loader.loadAsync('/textures/earth-clouds-4k.webp'),
     ])
   } catch (error) {
@@ -112,8 +116,8 @@ async function installGlobeEnhancements(globe: GlobeMethods, earthMaterial: THRE
     throw error
   }
   const anisotropy = Math.min(globe.renderer().capabilities.getMaxAnisotropy(), 8)
-  for (const texture of [waterTexture, nightTexture, cloudTexture]) texture.anisotropy = anisotropy
-  nightTexture.colorSpace = THREE.SRGBColorSpace
+  for (const texture of [waterTexture, cloudTexture]) texture.anisotropy = anisotropy
+  // nightTexture.colorSpace = THREE.SRGBColorSpace // DAY/NIGHT (disabled)
   cloudTexture.colorSpace = THREE.SRGBColorSpace
 
   resolvedEarthMaterial.specularMap = waterTexture
@@ -123,6 +127,7 @@ async function installGlobeEnhancements(globe: GlobeMethods, earthMaterial: THRE
   resolvedEarthMaterial.needsUpdate = true
 
   const radius = globe.getGlobeRadius()
+  /* DAY/NIGHT (disabled 2026-11-14) — city-lights shader sphere; see the note at the top of the file.
   const sunDirection = SUN_POSITION.clone().normalize()
   const nightMaterial = new THREE.ShaderMaterial({
     uniforms: { nightMap: { value: nightTexture }, sunDirection: { value: sunDirection } },
@@ -151,14 +156,15 @@ async function installGlobeEnhancements(globe: GlobeMethods, earthMaterial: THRE
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   })
-  // Overlays draw before the polygon layer (renderOrder 0) and never write depth, so country/state
-  // borders, hover caps, rings and the point stay readable on top of clouds and city lights.
   const nightMesh = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.004, 96, 96), nightMaterial)
   nightMesh.renderOrder = -2
-  // three-globe turns its globe mesh by -90° on Y (prime meridian along +Z); overlay spheres must match,
-  // or city lights and clouds land 90° of longitude away from the land they belong to.
   nightMesh.rotation.y = -Math.PI / 2
+  */
 
+  // Overlays draw before the polygon layer (renderOrder 0) and never write depth, so country/state
+  // borders, hover caps, rings and the point stay readable on top of the clouds.
+  // three-globe turns its globe mesh by -90° on Y (prime meridian along +Z); overlay spheres must match,
+  // or clouds (and city lights) land 90° of longitude away from the land they belong to.
   const cloudMaterial = new THREE.MeshPhongMaterial({
     map: cloudTexture,
     transparent: true,
@@ -169,17 +175,17 @@ async function installGlobeEnhancements(globe: GlobeMethods, earthMaterial: THRE
   const cloudMesh = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.012, 96, 96), cloudMaterial)
   cloudMesh.renderOrder = -1
   cloudMesh.rotation.y = -Math.PI / 2 // same alignment as the globe; the drift loop rotates from here
-  scene.add(nightMesh, cloudMesh)
+  scene.add(cloudMesh) // DAY/NIGHT (disabled): scene.add(nightMesh, cloudMesh)
 
   return {
     cloudMesh,
     dispose() {
-      scene.remove(nightMesh, cloudMesh)
-      nightMesh.geometry.dispose()
-      nightMaterial.dispose()
+      scene.remove(cloudMesh) // DAY/NIGHT (disabled): scene.remove(nightMesh, cloudMesh)
+      // nightMesh.geometry.dispose() // DAY/NIGHT (disabled)
+      // nightMaterial.dispose()
+      // nightTexture.dispose()
       cloudMesh.geometry.dispose()
       cloudMaterial.dispose()
-      nightTexture.dispose()
       cloudTexture.dispose()
       waterTexture.dispose()
       resolvedEarthMaterial.specularMap = previousMaterial.specularMap
@@ -248,25 +254,27 @@ export function EarthGlobe({ region, paused, resetSignal, onSelect }: { region: 
     const enhanced = visualProfile.enhancedEffects
     globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio, enhanced ? MAX_PIXEL_RATIO : BASIC_PIXEL_RATIO))
     const [ambient, sun] = globe.lights()
+    /* DAY/NIGHT (disabled 2026-11-14) — enhanced-profile lighting; see the note at the top of the file.
     if (enhanced) {
-      // Day/night: a dim cool fill and a fixed world-space sun; the city-lights shader lights the night side.
+      // A dim cool fill and a fixed world-space sun; the city-lights shader lights the night side.
       ambient.color.set(NIGHT_AMBIENT_TINT)
       ambient.intensity = 0.34 * Math.PI
       sun.color.set(SUN_TINT)
       sun.intensity = 1.18 * Math.PI
       sun.position.copy(SUN_POSITION)
       globe.scene().add(sun)
-    } else {
-      // Basic profile has no city lights, so a dark side would only look dark: keep the bright look.
-      // globe.gl ships a grey ambient plus a sun over the north pole (visible face at ~60% of the texture);
-      // a white ambient shows the texture at full strength and a camera-riding sun keeps the relief.
-      ambient.color.setScalar(1)
-      ambient.intensity = Math.PI
-      sun.intensity = SUN_INTENSITY
-      sun.position.set(-150, 150, 0)
-      globe.camera().add(sun)
-      globe.scene().add(globe.camera())
+      return
     }
+    */
+    // globe.gl ships a grey ambient plus a sun over the north pole (visible face at ~60% of the texture);
+    // a white ambient shows the texture at full strength and a camera-riding sun keeps the relief
+    // (and puts the ocean glint where the viewer looks).
+    ambient.color.setScalar(1)
+    ambient.intensity = Math.PI
+    sun.intensity = SUN_INTENSITY
+    sun.position.set(-150, 150, 0)
+    globe.camera().add(sun)
+    globe.scene().add(globe.camera())
   }, [ready, visualProfile])
 
   useEffect(() => {
