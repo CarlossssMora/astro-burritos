@@ -21,6 +21,16 @@ assert.ok(inside(fitRussia, russia.geometry, 600, 320), 'Russia fits after the a
 // Unwrapped, Russia spans ~360° (≈34 km/px at 600×320); shifted it spans ~170° (≈16 km/px).
 assert.ok(fitRussia.kmPerPixel < 20, `Russia is not squashed (km/px = ${fitRussia.kmPerPixel.toFixed(1)})`)
 
+// Under a wrapping projection, neighbor rings that cross 0° must not stretch into bands across the map
+// (regression: UK, Spain, France, Algeria, Mali, Ghana, Togo and Burkina Faso drew as horizontal bands).
+const pxPerDegree = fitRussia.project(101, 60)[0] - fitRussia.project(100, 60)[0]
+const stretched = load('countries.json').features.filter((f) => f.properties.ADM0_A3 !== 'ATA').filter((f) =>
+  fitRussia.path(f.geometry).split('M').filter(Boolean).some((ring) => {
+    const xs = ring.replace('Z', '').split('L').map((pair) => Number(pair.split(',')[0]))
+    return (Math.max(...xs) - Math.min(...xs)) / pxPerDegree > 180
+  }))
+assert.deepEqual(stretched.map((f) => f.properties.NAME), [], 'no country ring spans more than 180° under the Russia projection')
+
 // invert() undoes project(), including across the antimeridian (Chukotka sits at about -175°).
 const close = ([a, b], [c, d]) => Math.abs(a - c) < 1e-9 && Math.abs(b - d) < 1e-9
 assert.ok(close(fit.invert(...fit.project(-98.2, 19.04)), [-98.2, 19.04]), 'Puebla round-trips')

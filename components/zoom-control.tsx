@@ -11,7 +11,7 @@ const BUTTON_FACTOR = 1.5
 export function ZoomControl({ value, min, max, label, onChange }: { value: number; min: number; max: number; label: string; onChange: (zoom: number, animate: boolean) => void }) {
   const clamp = (zoom: number) => Math.min(max, Math.max(min, zoom))
   const position = Math.round((Math.log(clamp(value) / min) / Math.log(max / min)) * STEPS)
-  const readout = `${value.toFixed(1)}×`
+  const readout = `${value.toFixed(value < 1 ? 2 : 1)}×` // 0.25× must not read as 0.3×
 
   return <div className="zoom-control" role="group" aria-label={label}>
     <button type="button" className="zoom-step" aria-label={`${label}: zoom in`} title="Zoom in" disabled={value >= max - 1e-6} onClick={() => onChange(clamp(value * BUTTON_FACTOR), true)}><Plus size={16} /></button>

@@ -33,6 +33,14 @@ export function AppShell() {
   const params = new URLSearchParams({ latitude: String(region.lat), longitude: String(region.lon), startYear: String(startYear), endYear: String(endYear), variable })
   const { data: analysis, error, isLoading, mutate } = useSWR<ClimateAnalysis, Error>(analysisRequested ? `/api/series?${params.toString()}` : null, fetcher, { revalidateOnFocus: false })
 
+  // Every selection (globe click, selects, 2D map) stops the rotation so the chosen place stays in view;
+  // the play button resumes it.
+  function selectRegion(next: Region) {
+    setRegion(next)
+    setAnalysisRequested(false)
+    setPaused(true)
+  }
+
   function analyze() {
     setAnalysisRequested(true)
   }
@@ -59,7 +67,7 @@ export function AppShell() {
           <h1>Find a signal.<br /><span>Understand its story.</span></h1>
           <p className="intro-copy">Explore historical climate observations for a place you care about.</p>
 
-          <LocationSelector value={region} onChange={(next) => { setRegion(next); setAnalysisRequested(false) }} />
+          <LocationSelector value={region} onChange={selectRegion} />
           <VariableSelector value={variable} onChange={(next) => { setVariable(next); setAnalysisRequested(false) }} />
           <PeriodPicker startYear={startYear} endYear={endYear} onStartChange={(year) => { setStartYear(year); setAnalysisRequested(false) }} onEndChange={(year) => { setEndYear(year); setAnalysisRequested(false) }} />
 
@@ -73,12 +81,12 @@ export function AppShell() {
         <section className="center-column" aria-label="Interactive Earth and historical trend">
           <div className="globe-panel panel">
             <div className="globe-head"><div><span className="section-eyebrow"><span className="live-ring" /> GLOBAL VIEW</span><h2>One planet. <span>Countless signals.</span></h2></div><div className="globe-controls" aria-label="Globe controls"><button className="icon-button" type="button" onClick={() => setPaused(!paused)} aria-label={paused ? 'Resume globe rotation' : 'Pause globe rotation'} title={paused ? 'Resume rotation' : 'Pause rotation'}>{paused ? <Play size={16} /> : <Pause size={16} />}</button><button className="icon-button" type="button" onClick={() => setResetSignal((n) => n + 1)} aria-label="Reset globe view" title="Reset view"><RotateCcw size={16} /></button></div></div>
-            <div className="globe-stage"><EarthGlobe region={region} paused={paused} resetSignal={resetSignal} onSelect={(next) => { setRegion(next); setAnalysisRequested(false) }} /></div>
+            <div className="globe-stage"><EarthGlobe region={region} paused={paused} resetSignal={resetSignal} onSelect={selectRegion} /></div>
             <div className="globe-caption"><span><Globe size={16} /> DRAG TO ROTATE • SCROLL TO ZOOM • CLICK A COUNTRY, THEN A STATE</span><span className="globe-location"><MapPin size={16} /> {region.name}</span></div>
             <div className="globe-legend"><span className="legend-item"><span className="legend-point" /> SELECTED LOCATION</span><span className="legend-divider" /><span className="legend-note">No data overlays are shown until observations are verified.</span></div>
           </div>
           <TrendChart variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} onRetry={() => mutate()} />
-          <AreaMap region={region} onSelect={(next) => { setRegion(next); setAnalysisRequested(false) }} />
+          <AreaMap region={region} onSelect={selectRegion} />
         </section>
 
         <EvidencePanel region={region} variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} />

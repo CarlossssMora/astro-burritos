@@ -32,13 +32,20 @@ export function fitProjection(target: Polygonal, width: number, height: number, 
   const xFactor = Math.cos(((minLat + maxLat) / 2) * Math.PI / 180)
   const scale = Math.min((width - 2 * padding) / Math.max((maxLon - minLon) * xFactor, 1e-6), (height - 2 * padding) / Math.max(maxLat - minLat, 1e-6))
   const [centerLon, centerLat] = [(minLon + maxLon) / 2, (minLat + maxLat) / 2]
-  const project = (lon: number, lat: number): [number, number] => [width / 2 + (unwrap(lon) - centerLon) * xFactor * scale, height / 2 - (lat - centerLat) * scale]
+  const toXY = (lon: number, lat: number): [number, number] => [width / 2 + (lon - centerLon) * xFactor * scale, height / 2 - (lat - centerLat) * scale]
+  const project = (lon: number, lat: number): [number, number] => toXY(unwrap(lon), lat)
   // Map coordinates back to [lon, lat], with longitude wrapped into [-180, 180).
   const invert = (x: number, y: number): [number, number] => {
     const lon = centerLon + (x - width / 2) / (xFactor * scale)
     return [((lon + 540) % 360) - 180, Math.max(-90, Math.min(90, centerLat - (y - height / 2) / scale))]
   }
-  const path = (geometry: Polygonal) => rings(geometry).map((ring) => `M${ring.map(([lon, lat]) => project(lon, lat).map((value) => value.toFixed(1)).join(',')).join('L')}Z`).join('')
+  // Shift whole rings, never single vertices: a ring that crosses 0° (France, Algeria…) must not have its
+  // western half moved +360°, or it stretches into a band across the map. Natural Earth splits rings at
+  // ±180°, so "entirely west of 0°" is exactly the set of rings that belongs on the far side of the wrap.
+  const path = (geometry: Polygonal) => rings(geometry).map((ring) => {
+    const shift = wraps && Math.max(...ring.map(([lon]) => lon)) < 0 ? 360 : 0
+    return `M${ring.map(([lon, lat]) => toXY(lon + shift, lat).map((value) => value.toFixed(1)).join(',')).join('L')}Z`
+  }).join('')
   return { project, invert, path, kmPerPixel: KM_PER_DEGREE / scale }
 }
 

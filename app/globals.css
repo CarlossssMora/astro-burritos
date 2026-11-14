@@ -223,18 +223,21 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .area-scale { position: absolute; left: 4%; bottom: 12px; height: 8px; border: 2px solid var(--foreground); border-top: 0; }
 .area-scale span { position: absolute; left: 0; bottom: 10px; white-space: nowrap; font: 500 12px/1 var(--font-mono); color: var(--foreground); }
 
-/* Zoom slider (globe and 2D map): Deep Blue steps, Neon Blue fill, Neon Yellow thumb with a dark ring */
-.zoom-control { position: absolute; top: 10px; right: 10px; bottom: 10px; z-index: 2; width: 44px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 0; border: 1px solid var(--border); border-radius: 22px; background: color-mix(in srgb, var(--color-white) 90%, transparent); box-shadow: 0 1px 4px color-mix(in srgb, var(--color-deep-blue) 10%, transparent); }
-.zoom-step { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; border: 0; border-radius: 10px; background: var(--color-deep-blue); color: var(--color-white); transition: background-color .15s; }
-.zoom-step:not(:disabled):hover { background: var(--color-electric-blue); }
-/* Vertical native range: writing-mode turns it upright, direction: rtl puts the maximum at the top. */
-.zoom-range { flex: 1; min-height: 40px; inline-size: auto; block-size: 32px; margin: 0; writing-mode: vertical-lr; direction: rtl; appearance: none; -webkit-appearance: none; background: transparent; cursor: pointer; }
-.zoom-range::-webkit-slider-runnable-track { inline-size: 100%; block-size: 6px; border-radius: 3px; background: linear-gradient(to top, var(--primary) var(--fill), var(--border) var(--fill)); }
-.zoom-range::-webkit-slider-thumb { -webkit-appearance: none; inline-size: 20px; block-size: 20px; margin-inline-start: -7px; border-radius: 50%; background: var(--color-neon-yellow); border: 3px solid var(--color-deep-blue); }
-.zoom-range::-moz-range-track { inline-size: 6px; border-radius: 3px; background: var(--border); }
-.zoom-range::-moz-range-progress { inline-size: 6px; border-radius: 3px; background: var(--primary); }
-.zoom-range::-moz-range-thumb { inline-size: 14px; block-size: 14px; border-radius: 50%; background: var(--color-neon-yellow); border: 3px solid var(--color-deep-blue); }
-.zoom-readout { min-width: 38px; padding: 2px 4px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); text-align: center; font: 500 12px/1.2 var(--font-mono); color: var(--foreground); }
+/* Zoom slider (globe and 2D map): a slim white pill, quiet round steps, a 4px track with a Neon Blue fill
+   and the brand location dot (Neon Yellow with a Deep Blue ring) as the thumb. Centered on the right edge. */
+.zoom-control { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 2; height: min(176px, calc(100% - 20px)); width: 36px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0 6px; border: 1px solid var(--border); border-radius: 18px; background: var(--card); box-shadow: 0 2px 6px color-mix(in srgb, var(--color-deep-blue) 10%, transparent); }
+.zoom-step { width: 28px; height: 28px; flex-shrink: 0; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--foreground); transition: background-color .15s; }
+.zoom-step:not(:disabled):hover { background: var(--accent); }
+.zoom-step:disabled { opacity: .3; }
+/* Vertical native range: writing-mode stands it upright and direction: rtl puts the maximum at the top.
+   In vertical writing the inline axis is vertical, so thickness is block-size and centering is margin-block. */
+.zoom-range { flex: 1; min-height: 32px; inline-size: auto; block-size: 20px; margin: 4px 0; padding: 0; writing-mode: vertical-lr; direction: rtl; appearance: none; -webkit-appearance: none; background: transparent; cursor: pointer; }
+.zoom-range::-webkit-slider-runnable-track { block-size: 4px; border-radius: 2px; background: linear-gradient(to top, var(--primary) var(--fill), var(--border) var(--fill)); }
+.zoom-range::-webkit-slider-thumb { -webkit-appearance: none; inline-size: 16px; block-size: 16px; margin-block-start: -6px; border-radius: 50%; background: var(--color-neon-yellow); border: 2px solid var(--color-deep-blue); box-sizing: border-box; }
+.zoom-range::-moz-range-track { block-size: 4px; border-radius: 2px; background: var(--border); }
+.zoom-range::-moz-range-progress { block-size: 4px; border-radius: 2px; background: var(--primary); }
+.zoom-range::-moz-range-thumb { inline-size: 16px; block-size: 16px; border-radius: 50%; background: var(--color-neon-yellow); border: 2px solid var(--color-deep-blue); box-sizing: border-box; }
+.zoom-readout { font: 500 12px/1 var(--font-mono); color: var(--muted-foreground); }
 .chart-line { stroke: var(--primary); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .trend-line { stroke: var(--color-rocket-red); stroke-width: 1.5; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; } /* was neon-yellow: ~1.1:1 on white cards */
 .chart-dot { fill: var(--card); stroke: var(--primary); stroke-width: 1; vector-effect: non-scaling-stroke; }
