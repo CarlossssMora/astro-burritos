@@ -1,6 +1,7 @@
 'use client'
 
 import { ChartNoAxesColumn, Download, LoaderCircle, TrendingUp } from 'lucide-react'
+import { PanelHeader } from '@/components/panel-header'
 import type { Variable } from '@/components/variable-selector'
 import type { ClimateAnalysis } from '@/lib/nasa/types'
 
@@ -47,7 +48,7 @@ export function TrendChart({ variable, startYear, endYear, analysisRequested, an
   }
 
   return <section className="chart-panel panel" aria-labelledby="trend-title">
-    <header className="section-eyebrow panel-header"><TrendingUp size={16} /> HISTORICAL OBSERVATIONS</header>
+    <PanelHeader badge="Result" title="Historical observations" icon={TrendingUp} />
     <div className="chart-header">
       <h2 id="trend-title">{label} by year <span className="range-label">{startYear} — {endYear}</span></h2>
       <div className="chart-actions">

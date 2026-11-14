@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { ArrowRight, ArrowUpRight, Info, MapPin, MapPinned, MousePointerClick, Navigation, Pause, Play, Rotate3d, RotateCcw, Sparkles, ZoomIn } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Globe, Info, MapPin, MapPinned, MousePointerClick, Navigation, Pause, Play, Rotate3d, RotateCcw, Sparkles, ZoomIn } from 'lucide-react'
 import { EarthGlobe } from '@/components/earth-globe'
+import { PanelHeader } from '@/components/panel-header'
 import { LocationSelector, type Region } from '@/components/location-selector'
 import { VariableSelector, type Variable } from '@/components/variable-selector'
 import { PeriodPicker } from '@/components/period-picker'
@@ -65,7 +66,7 @@ export function AppShell() {
 
       <section className="workspace" id="main" aria-label="Climate signal analysis workspace">
         <aside className="filters-panel panel">
-          <header className="section-eyebrow panel-header"><Navigation size={16} /> ANALYSIS SETUP</header>
+          <PanelHeader badge="Step 1" title="Set up your query" icon={Navigation} />
           <h1>Find a signal.<br /><span>Understand its story.</span></h1>
           <p className="intro-copy">Explore historical climate observations for a place you care about.</p>
 
@@ -82,14 +83,14 @@ export function AppShell() {
 
         <section className="center-column" aria-label="Interactive Earth and historical trend">
           <div className="globe-panel panel">
-            <header className="section-eyebrow panel-header"><span className="live-ring" /> GLOBAL VIEW</header>
+            <PanelHeader badge="Step 2" title="Pick a place on the map" icon={Globe} />
             <div className="globe-head"><h2>One planet. <span>Countless signals.</span></h2><div className="globe-controls" aria-label="Globe controls"><button className="icon-button" type="button" onClick={() => setPaused(!paused)} aria-label={paused ? 'Resume globe rotation' : 'Pause globe rotation'} title={paused ? 'Resume rotation' : 'Pause rotation'}>{paused ? <Play size={16} /> : <Pause size={16} />}</button><button className="icon-button" type="button" onClick={() => setResetSignal((n) => n + 1)} aria-label="Reset globe view" title="Reset view"><RotateCcw size={16} /></button></div></div>
             <div className="globe-stage"><EarthGlobe region={region} paused={paused} resetSignal={resetSignal} onSelect={selectRegion} /></div>
             <div className="globe-caption"><ol className="globe-steps" aria-label="How to use the globe"><li><Rotate3d size={16} /> DRAG TO ROTATE</li><li><ArrowRight size={16} className="step-arrow" aria-hidden="true" /><ZoomIn size={16} /> SCROLL TO ZOOM</li><li><ArrowRight size={16} className="step-arrow" aria-hidden="true" /><MousePointerClick size={16} /> CLICK A COUNTRY</li><li><ArrowRight size={16} className="step-arrow" aria-hidden="true" /><MapPinned size={16} /> THEN A STATE</li></ol><span className="globe-location"><MapPin size={16} /> {region.name}</span></div>
             <div className="globe-legend"><span className="legend-item"><span className="legend-point" /> SELECTED LOCATION</span><span className="legend-divider" /><span className="legend-note">No data overlays are shown until observations are verified.</span></div>
           </div>
-          <TrendChart variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} onRetry={() => mutate()} />
           <AreaMap region={region} />
+          <TrendChart variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} onRetry={() => mutate()} />
         </section>
 
         <ResultsPanel region={region} variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} />

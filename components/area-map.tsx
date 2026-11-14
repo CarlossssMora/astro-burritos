@@ -1,7 +1,8 @@
 'use client'
 
 import { useMemo } from 'react'
-import { Map as MapIcon, MapPin } from 'lucide-react'
+import { Crosshair, Map as MapIcon, MapPin } from 'lucide-react'
+import { PanelHeader } from '@/components/panel-header'
 import type { Region } from '@/components/location-selector'
 import { fitProjection, niceKm, useCountries, useStates } from '@/lib/geo'
 
@@ -32,7 +33,7 @@ export function AreaMap({ region }: { region: Region }) {
   const coords = `${hemisphere(region.lat, 'N', 'S')} • ${hemisphere(region.lon, 'E', 'W')}`
 
   return <section className="area-panel panel" aria-labelledby="area-title">
-    <header className="section-eyebrow panel-header"><MapIcon size={16} /> SELECTED AREA</header>
+    <PanelHeader badge="Step 3" title="Exact place (optional)" icon={Crosshair} />
     <div className="chart-header"><h2 id="area-title">{title ?? 'No area selected'} {state && country && <span className="range-label">{country.properties.NAME}</span>}</h2></div>
     {map ? <>
       <div className="area-map">

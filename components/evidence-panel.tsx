@@ -1,5 +1,6 @@
 import { AlertTriangle, BadgeCheck, ChartNoAxesColumn, CircleDot, Database, FileText, Info } from 'lucide-react'
 import type { Region } from '@/components/location-selector'
+import { PanelHeader } from '@/components/panel-header'
 import type { Variable } from '@/components/variable-selector'
 import type { ClimateAnalysis } from '@/lib/nasa/types'
 
@@ -16,8 +17,7 @@ export function ResultsPanel({ region, variable, startYear, endYear, analysisReq
   const status = isLoading ? 'REQUESTING NASA POWER DATA' : error ? 'NASA POWER REQUEST FAILED' : analysis && !analysis.observations.length ? 'NO OBSERVATIONS RETURNED' : analysis ? 'VERIFIED OBSERVATIONS LOADED' : 'READY FOR ANALYSIS'
 
   return <aside className="results-panel panel" aria-labelledby="results-title">
-    <header className="section-eyebrow panel-header"><ChartNoAxesColumn size={16} /> ANALYSIS RESULTS</header>
-    <h2 id="results-title" className="results-title">Signal summary</h2>
+    <PanelHeader badge="Summary" title="Signal summary" icon={ChartNoAxesColumn} titleId="results-title" />
     <div className="evidence-status"><span className="status-indicator" /> {status}</div>
     <div className="results-grid">
       <div className="evidence-section"><h3><CircleDot size={16} /> SPATIAL &amp; TEMPORAL SCOPE</h3><div className="scope-location">{region.country ? `Point in ${region.name}` : region.name}</div><div className="scope-coords">{region.lat.toFixed(2)}°, {region.lon.toFixed(2)}°</div><div className="scope-period"><span>{analysis?.period.startYear ?? startYear}—{analysis?.period.endYear ?? endYear}</span><span>{variable === 'temperature' ? 'Temperature • °C annual mean' : 'Precipitation • mm/year total'}</span></div>{analysis && <p className="evidence-muted">Returned coverage: {analysis.coverage.start ?? '—'} to {analysis.coverage.end ?? '—'} • {analysis.missingCount} expected monthly values unavailable</p>}</div>
@@ -35,9 +35,8 @@ export function EvidencePanel({ variable, analysis }: Pick<AnalysisProps, 'varia
   const parameter = analysis?.parameter ?? (variable === 'temperature' ? 'T2M' : 'PRECTOTCORR')
 
   return <section className="evidence-panel panel" aria-labelledby="evidence-title">
-    <header className="section-eyebrow panel-header"><FileText size={16} /> RESEARCH RECORD</header>
-    <div className="evidence-header"><h2 id="evidence-title">Evidence file</h2><span className="record-id">ES—0001</span></div>
-    <p className="evidence-intro">A transparent record of the source, methods, and limits behind every climate signal.</p>
+    <PanelHeader badge="Source" title="Evidence file" icon={FileText} titleId="evidence-title" />
+    <p className="evidence-intro">A transparent record of the source, methods, and limits behind every climate signal. <span className="record-id">ES—0001</span></p>
     <div className="evidence-section evidence-source">
       <h3><Database size={16} /> DATA SOURCE</h3>
       <div><div className="evidence-value">NASA POWER • {parameter}</div><p className="evidence-muted">Monthly {parameter === 'T2M' ? 'air temperature' : 'corrected precipitation'} values • annual aggregation</p><a className="source-link" href={analysis?.sourceUrl ?? 'https://power.larc.nasa.gov/'} target="_blank" rel="noreferrer">NASA POWER source request <span>↗</span></a></div>
