@@ -41,6 +41,15 @@ export type TrendResult = {
   method: string
   warnings: string[]
   completeness: number | null
+  autocorrelation: AutocorrelationDiagnostics
+}
+
+export type AutocorrelationDiagnostics = {
+  lag1ResidualCorrelation: number | null
+  screeningThreshold: number | null
+  flagged: boolean | null
+  method: string
+  warnings: string[]
 }
 
 export type MannKendallResult = {

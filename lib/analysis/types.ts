@@ -8,10 +8,23 @@ export type TrendAnalyzer = (observations: NasaObservation[]) => TrendResult
  * types deliberately keep source metadata beside values so the UI cannot
  * accidentally combine products with different semantics.
  */
-export type DataSourceId = 'nasa-power' | 'nasa-imerg' | 'nasa-appeears' | 'nasa-gibs' | 'noaa-cdo' | 'knmi-climate-explorer' | 'swot' | 'radarsat'
+export type DataSourceId = 'nasa-power' | 'nasa-imerg' | 'nasa-appeears' | 'nasa-gibs' | 'noaa-ghcn-daily' | 'knmi-climate-explorer' | 'nasa-dem' | 'swot' | 'radarsat'
 export type TemporalResolution = 'subdaily' | 'daily' | '8-day' | 'monthly' | 'annual' | 'irregular'
 export type AccessMethod = 'api' | 'download' | 'giovanni' | 'appeears' | 'gibs-tile' | 'manual'
 export type QualityFlag = 'valid' | 'fill-value' | 'non-numeric' | 'duplicate' | 'out-of-range' | 'low-quality' | 'incomplete-period' | 'suspect-outlier'
+export type TemporalAlignmentMode = 'source-native' | 'common-complete-window' | 'fixed-window'
+
+export type TemporalWindow = {
+  id: string
+  mode: TemporalAlignmentMode
+  temporalResolution: TemporalResolution
+  sourceIds: DataSourceId[]
+  startPeriod: string
+  endPeriod: string
+  completePeriods: string[]
+  status: 'complete' | 'partial' | 'no-overlap'
+  notes: string[]
+}
 
 export type CanonicalLocation = {
   id: string
@@ -66,7 +79,14 @@ export type CanonicalSeries = {
   temporalResolution: TemporalResolution
   location: CanonicalLocation
   observations: CanonicalObservation[]
-  coverage: { start: string | null; end: string | null; expectedCount: number; validCount: number }
+  coverage: {
+    start: string | null
+    end: string | null
+    expectedCount: number
+    validCount: number
+    availablePeriods: string[]
+    completePeriods: string[]
+  }
   transformations: string[]
 }
 
@@ -106,6 +126,11 @@ export type EarthScopeDataBundle = {
     researchQuestion: string
     regions: CanonicalLocation[]
     baselinePeriod: { startYear: number; endYear: number }
+  }
+  temporalPolicy: {
+    defaultMode: 'common-complete-window'
+    noImputation: true
+    windows: TemporalWindow[]
   }
   sources: Array<{
     id: DataSourceId

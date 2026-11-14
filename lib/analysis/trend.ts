@@ -1,5 +1,5 @@
 import type { AnnualObservation, NasaObservation, TrendResult } from '@/lib/nasa/types'
-import { calculateMannKendall, calculateSenSlope } from './robust-trend'
+import { calculateLag1ResidualAutocorrelation, calculateMannKendall, calculateSenSlope } from './robust-trend'
 
 const EPSILON = 1e-12
 
@@ -111,11 +111,12 @@ export function aggregateAnnual(observations: NasaObservation[], parameter: 'T2M
 export function calculateTrend(annual: AnnualObservation[]): TrendResult {
   const completeYears = annual.filter((observation) => observation.completeness >= 0.9 && Number.isFinite(observation.value))
   const warnings: string[] = []
+  const unavailableAutocorrelation = calculateLag1ResidualAutocorrelation([])
   if (completeYears.length !== annual.length) warnings.push('Years with less than 90% monthly coverage were excluded from the trend.')
   const completeness = completeYears.length ? Math.min(...completeYears.map((observation) => observation.completeness)) : null
   if (completeYears.length < 3) {
     warnings.push('At least three sufficiently complete years are required for a trend estimate.')
-    return { nYears: completeYears.length, slopePerYear: null, senSlopePerYear: null, intercept: null, pValue: null, mannKendall: null, confidenceInterval95: null, rSquared: null, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness }
+    return { nYears: completeYears.length, slopePerYear: null, senSlopePerYear: null, intercept: null, pValue: null, mannKendall: null, confidenceInterval95: null, rSquared: null, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness, autocorrelation: unavailableAutocorrelation }
   }
 
   const x = completeYears.map((observation) => observation.year)
@@ -126,7 +127,7 @@ export function calculateTrend(annual: AnnualObservation[]): TrendResult {
   const sxy = x.reduce((sum, value, index) => sum + (value - xMean) * (y[index] - yMean), 0)
   if (sxx <= EPSILON) {
     warnings.push('The selected years do not provide enough variation for a slope estimate.')
-    return { nYears: completeYears.length, slopePerYear: null, senSlopePerYear: calculateSenSlope(completeYears), intercept: null, pValue: null, mannKendall: calculateMannKendall(completeYears), confidenceInterval95: null, rSquared: null, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness }
+    return { nYears: completeYears.length, slopePerYear: null, senSlopePerYear: calculateSenSlope(completeYears), intercept: null, pValue: null, mannKendall: calculateMannKendall(completeYears), confidenceInterval95: null, rSquared: null, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness, autocorrelation: unavailableAutocorrelation }
   }
 
   const slope = sxy / sxx
@@ -139,7 +140,7 @@ export function calculateTrend(annual: AnnualObservation[]): TrendResult {
 
   if (residualSumOfSquares <= EPSILON) {
     warnings.push('The residual variance is zero; p-value and confidence interval are not defined.')
-    return { nYears: completeYears.length, slopePerYear: slope, senSlopePerYear: calculateSenSlope(completeYears), intercept, pValue: null, mannKendall: calculateMannKendall(completeYears), confidenceInterval95: null, rSquared, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness }
+    return { nYears: completeYears.length, slopePerYear: slope, senSlopePerYear: calculateSenSlope(completeYears), intercept, pValue: null, mannKendall: calculateMannKendall(completeYears), confidenceInterval95: null, rSquared, significantAt05: null, method: 'Ordinary least squares on annual aggregates', warnings, completeness, autocorrelation: calculateLag1ResidualAutocorrelation(y.map((value, index) => value - predicted[index])) }
   }
 
   const residualVariance = residualSumOfSquares / degreesOfFreedom
@@ -148,5 +149,7 @@ export function calculateTrend(annual: AnnualObservation[]): TrendResult {
   const pValue = Math.min(1, Math.max(0, 2 * (1 - studentTCdf(Math.abs(tStatistic), degreesOfFreedom))))
   const criticalValue = studentTQuantile(0.975, degreesOfFreedom)
   const confidenceInterval95: [number, number] = [slope - criticalValue * slopeStandardError, slope + criticalValue * slopeStandardError]
-  return { nYears: completeYears.length, slopePerYear: slope, senSlopePerYear: calculateSenSlope(completeYears), intercept, pValue, mannKendall: calculateMannKendall(completeYears), confidenceInterval95, rSquared, significantAt05: pValue < 0.05, method: 'Ordinary least squares on annual aggregates; classical errors assume independent residuals', warnings, completeness }
+  const autocorrelation = calculateLag1ResidualAutocorrelation(y.map((value, index) => value - predicted[index]))
+  warnings.push(...autocorrelation.warnings)
+  return { nYears: completeYears.length, slopePerYear: slope, senSlopePerYear: calculateSenSlope(completeYears), intercept, pValue, mannKendall: calculateMannKendall(completeYears), confidenceInterval95, rSquared, significantAt05: pValue < 0.05, method: 'Ordinary least squares on annual aggregates; classical errors assume independent residuals', warnings, completeness, autocorrelation }
 }
