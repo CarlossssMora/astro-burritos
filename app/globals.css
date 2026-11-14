@@ -163,10 +163,12 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .globe-head h2 { margin: 8px 0 0; font: 700 22px/1.2 var(--font-heading); }
 .globe-head h2 span { color: var(--primary); }
 .globe-controls { display: flex; gap: 8px; }
-.globe-stage { height: 340px; position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: 16px; background: var(--card); }
-/* dark: the "coordinates" grid pattern (.globe-stage::before) lives in commit 254aba8 */
-.globe-canvas { position: absolute; inset: 0; }
-.globe-canvas canvas { outline: none; }
+.globe-stage { height: 340px; position: relative; overflow: hidden; isolation: isolate; border: 1px solid var(--border); border-radius: 16px; background: var(--card); }
+.globe-stage::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 48px 48px; opacity: .35; mask-image: radial-gradient(ellipse at center, black 10%, transparent 80%); }
+.globe-stage::after { content: ""; position: absolute; inset: 2% 0 8%; z-index: 0; pointer-events: none; background: radial-gradient(circle at 17% 28%, rgba(255,255,255,.8) 0 1px, transparent 1.6px), radial-gradient(circle at 78% 20%, rgba(46,150,245,.7) 0 1px, transparent 1.5px), radial-gradient(circle at 85% 72%, rgba(255,255,255,.65) 0 1px, transparent 1.4px), radial-gradient(circle at 29% 76%, rgba(46,150,245,.8) 0 1px, transparent 1.6px); background-size: 151px 137px, 223px 191px, 181px 211px, 263px 229px; opacity: .55; mask-image: radial-gradient(ellipse at center, black 18%, transparent 82%); }
+.globe-canvas { position: absolute; inset: 0; z-index: 1; filter: drop-shadow(0 0 18px rgba(46,150,245,.22)); }
+.globe-canvas canvas { outline: none; cursor: grab; }
+.globe-canvas canvas:active { cursor: grabbing; }
 .globe-loading { position: absolute; inset: 0; display: grid; place-items: center; font-size: 14px; color: var(--muted-foreground); }
 .globe-caption { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 0; color: var(--muted-foreground); }
 .globe-caption > span { display: flex; align-items: center; gap: 8px; }
