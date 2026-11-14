@@ -210,7 +210,8 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 
 /* 2D area map */
 .area-map { position: relative; margin-top: 16px; border: 1px solid var(--border); border-radius: 16px; background: color-mix(in srgb, var(--color-blue-yonder) 16%, var(--color-white)); overflow: hidden; } /* sea */
-.area-svg { display: block; width: 100%; height: auto; }
+.area-svg { display: block; width: 100%; height: auto; cursor: grab; touch-action: none; } /* touch-action: one finger pans the map, not the page */
+.area-svg.is-dragging, .area-svg.is-dragging .area-pick { cursor: grabbing; }
 .area-svg path, .area-svg circle { vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .area-context { fill: color-mix(in srgb, var(--color-electric-blue) 6%, var(--color-white)); stroke: color-mix(in srgb, var(--color-electric-blue) 25%, var(--color-white)); stroke-width: 1; }
 .area-shape { fill: color-mix(in srgb, var(--color-neon-blue) 14%, var(--color-white)); stroke: var(--primary); stroke-width: 2; }
@@ -225,7 +226,7 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 
 /* Zoom slider (globe and 2D map): a slim white pill, quiet round steps, a 4px track with a Neon Blue fill
    and the brand location dot (Neon Yellow with a Deep Blue ring) as the thumb. Centered on the right edge. */
-.zoom-control { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 2; height: min(176px, calc(100% - 20px)); width: 36px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0 6px; border: 1px solid var(--border); border-radius: 18px; background: var(--card); box-shadow: 0 2px 6px color-mix(in srgb, var(--color-deep-blue) 10%, transparent); }
+.zoom-control { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 2; height: min(176px, calc(100% - 20px)); width: 44px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0 6px; border: 1px solid var(--border); border-radius: 22px; background: var(--card); box-shadow: 0 2px 6px color-mix(in srgb, var(--color-deep-blue) 10%, transparent); }
 .zoom-step { width: 28px; height: 28px; flex-shrink: 0; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--foreground); transition: background-color .15s; }
 .zoom-step:not(:disabled):hover { background: var(--accent); }
 .zoom-step:disabled { opacity: .3; }
@@ -237,7 +238,8 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .zoom-range::-moz-range-track { block-size: 4px; border-radius: 2px; background: var(--border); }
 .zoom-range::-moz-range-progress { block-size: 4px; border-radius: 2px; background: var(--primary); }
 .zoom-range::-moz-range-thumb { inline-size: 16px; block-size: 16px; border-radius: 50%; background: var(--color-neon-yellow); border: 2px solid var(--color-deep-blue); box-sizing: border-box; }
-.zoom-readout { font: 500 12px/1 var(--font-mono); color: var(--muted-foreground); }
+.zoom-readout { font: 500 12px/1 var(--font-mono); letter-spacing: -.02em; color: var(--muted-foreground); white-space: nowrap; } /* 44px fits "0.25×" and "16.0×" at the 12px minimum */
+.zoom-range:focus-visible { outline-offset: 2px; border-radius: 10px; }
 .chart-line { stroke: var(--primary); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .trend-line { stroke: var(--color-rocket-red); stroke-width: 1.5; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; } /* was neon-yellow: ~1.1:1 on white cards */
 .chart-dot { fill: var(--card); stroke: var(--primary); stroke-width: 1; vector-effect: non-scaling-stroke; }

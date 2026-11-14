@@ -46,7 +46,10 @@ export function fitProjection(target: Polygonal, width: number, height: number, 
     const shift = wraps && Math.max(...ring.map(([lon]) => lon)) < 0 ? 360 : 0
     return `M${ring.map(([lon, lat]) => toXY(lon + shift, lat).map((value) => value.toFixed(1)).join(',')).join('L')}Z`
   }).join('')
-  return { project, invert, path, kmPerPixel: KM_PER_DEGREE / scale }
+  // The whole planet in map units (wrapped maps reach 360°), used to keep panning from losing the world.
+  const [x0, y0] = toXY(-180, 90)
+  const [x1, y1] = toXY(wraps ? 360 : 180, -90)
+  return { project, invert, path, kmPerPixel: KM_PER_DEGREE / scale, world: { x0, y0, x1, y1 } }
 }
 
 // Largest 1/2/5 × 10ⁿ value that fits under `maxKm`, for a scale bar.
