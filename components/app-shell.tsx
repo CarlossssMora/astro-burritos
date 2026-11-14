@@ -30,7 +30,7 @@ export function AppShell() {
   // Respect reduced-motion: start with the globe still.
   useEffect(() => { if (matchMedia('(prefers-reduced-motion: reduce)').matches) setPaused(true) }, [])
   const params = new URLSearchParams({ latitude: String(region.lat), longitude: String(region.lon), startYear: String(startYear), endYear: String(endYear), variable })
-  const { data: analysis, error, isLoading } = useSWR<ClimateAnalysis, Error>(analysisRequested ? `/api/climate?${params.toString()}` : null, fetcher, { revalidateOnFocus: false })
+  const { data: analysis, error, isLoading, mutate } = useSWR<ClimateAnalysis, Error>(analysisRequested ? `/api/series?${params.toString()}` : null, fetcher, { revalidateOnFocus: false })
 
   function analyze() {
     setAnalysisRequested(true)
@@ -62,8 +62,8 @@ export function AppShell() {
           <VariableSelector value={variable} onChange={(next) => { setVariable(next); setAnalysisRequested(false) }} />
           <PeriodPicker startYear={startYear} endYear={endYear} onStartChange={(year) => { setStartYear(year); setAnalysisRequested(false) }} onEndChange={(year) => { setEndYear(year); setAnalysisRequested(false) }} />
 
-          <button className="analyze-button" type="button" onClick={analyze}><Sparkles size={16} /> Analyze region <span>→</span></button>
-          <div className="setup-note"><Info size={16} /><span>Analysis runs when a verified data connection is available.</span></div>
+          <button className="analyze-button" type="button" onClick={analyze} disabled={isLoading}><Sparkles size={16} /> {isLoading ? 'Requesting…' : 'Analyze region'} <span>→</span></button>
+          <div className="setup-note"><Info size={16} /><span>Analyze requests the selected monthly series from NASA POWER. Results are descriptive, not forecasts.</span></div>
           <div className="panel-footnote"><span className="step-number">01</span><span>SELECT LOCATION &amp; CLIMATE VARIABLE</span></div>
         </aside>
 
@@ -73,7 +73,7 @@ export function AppShell() {
             <div className="globe-stage"><EarthGlobe region={region} paused={paused} resetSignal={resetSignal} onSelect={(lat, lon) => { setRegion({ name: `Selected coordinates`, lat, lon }); setAnalysisRequested(false) }} /><div className="globe-caption"><span><Crosshair size={16} /> DRAG TO ROTATE • SCROLL TO ZOOM • CLICK TO SELECT</span><span className="globe-location"><MapPin size={16} /> {region.name}</span></div></div>
             <div className="globe-legend"><span className="legend-item"><span className="legend-point" /> SELECTED LOCATION</span><span className="legend-divider" /><span className="legend-note">No data overlays are shown until observations are verified.</span></div>
           </div>
-          <TrendChart variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} />
+          <TrendChart variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} onRetry={() => mutate()} />
         </section>
 
         <EvidencePanel region={region} variable={variable} startYear={startYear} endYear={endYear} analysisRequested={analysisRequested} analysis={analysis} error={error} isLoading={isLoading} />

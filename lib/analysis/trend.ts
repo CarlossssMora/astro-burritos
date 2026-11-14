@@ -91,9 +91,11 @@ export function aggregateAnnual(observations: NasaObservation[], parameter: 'T2M
   }
 
   return [...groups.entries()].sort(([first], [second]) => first - second).map(([year, values]) => {
-    const expectedObservationCount = new Date(Date.UTC(year + 1, 0, 0)).getUTCDate() === 29 ? 366 : 365
-    const total = values.reduce((sum, observation) => sum + observation.value, 0)
-    const value = parameter === 'PRECTOTCORR' ? total : total / values.length
+    const expectedObservationCount = 12
+    const totalDays = values.reduce((sum, observation) => sum + observation.daysInMonth, 0)
+    const value = parameter === 'PRECTOTCORR'
+      ? values.reduce((sum, observation) => sum + observation.value * observation.daysInMonth, 0)
+      : values.reduce((sum, observation) => sum + observation.value * observation.daysInMonth, 0) / totalDays
     return {
       year,
       value,
@@ -108,7 +110,7 @@ export function aggregateAnnual(observations: NasaObservation[], parameter: 'T2M
 export function calculateTrend(annual: AnnualObservation[]): TrendResult {
   const completeYears = annual.filter((observation) => observation.completeness >= 0.9 && Number.isFinite(observation.value))
   const warnings: string[] = []
-  if (completeYears.length !== annual.length) warnings.push('Years with less than 90% daily coverage were excluded from the trend.')
+  if (completeYears.length !== annual.length) warnings.push('Years with less than 90% monthly coverage were excluded from the trend.')
   const completeness = completeYears.length ? Math.min(...completeYears.map((observation) => observation.completeness)) : null
   if (completeYears.length < 3) {
     warnings.push('At least three sufficiently complete years are required for a trend estimate.')

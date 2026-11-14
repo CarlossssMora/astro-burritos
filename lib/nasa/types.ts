@@ -1,6 +1,6 @@
 export type NasaParameter = 'T2M' | 'PRECTOTCORR'
 export type NasaPowerRequest = { parameter: NasaParameter; latitude: number; longitude: number; startYear: number; endYear: number }
-export type NasaObservation = { date: string; value: number; unit: string }
+export type NasaObservation = { date: string; year: number; month: number; value: number; unit: string; daysInMonth: number }
 export type NasaPowerResult = {
   parameter: NasaParameter
   unit: string
@@ -8,7 +8,12 @@ export type NasaPowerResult = {
   source: 'NASA POWER'
   sourceUrl: string
   retrievedAt: string
-  temporalResolution: 'daily'
+  productVersion: string | null
+  sourceModel: string | null
+  timeStandard: 'LST' | 'UTC' | null
+  fillValue: number
+  temporalResolution: 'monthly'
+  period: { startYear: number; endYear: number }
   coverage: { start: string | null; end: string | null }
   missingCount: number
   processingNotes: string[]

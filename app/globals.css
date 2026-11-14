@@ -166,6 +166,7 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .range-label { margin-left: 8px; font: 400 13px var(--font-mono); color: var(--color-blue-yonder); }
 .export-button { display: flex; gap: 6px; align-items: center; flex-shrink: 0; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--color-white); background: var(--color-deep-blue); font-size: 13px; font-weight: 700; }
 .export-button:not(:disabled):hover { border-color: var(--color-neon-yellow); color: var(--color-neon-yellow); }
+.retry-button { margin-top: 10px; }
 .chart-empty { position: relative; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 10px 20px 26px; }
 .chart-empty-icon { margin-bottom: 8px; color: var(--color-blue-yonder); font-weight: 700; }
 .chart-empty strong { font-size: 14px; font-weight: 700; }
@@ -176,6 +177,7 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .trend-svg { width: 100%; height: 110px; overflow: visible; margin-top: 4px; }
 .chart-grid-line { stroke: var(--color-electric-blue); stroke-width: .5; stroke-dasharray: 2 2; }
 .chart-line { stroke: var(--color-blue-yonder); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.trend-line { stroke: var(--color-neon-yellow); stroke-width: 1.5; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
 .chart-dot { fill: var(--color-white); stroke: var(--color-blue-yonder); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .chart-disclaimer { margin: 8px 0 0; text-align: center; font-size: 12px; line-height: 1.45; color: var(--color-blue-yonder); }
 .loading-icon { margin-bottom: 8px; color: var(--color-neon-yellow); animation: earthscope-spin 1.2s linear infinite; }
