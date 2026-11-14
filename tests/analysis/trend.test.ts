@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { aggregateAnnual, calculateTrend } from '../../lib/analysis/trend'
-import { calculateMannKendall, calculateSenSlope } from '../../lib/analysis/robust-trend'
+import { calculateLag1ResidualAutocorrelation, calculateMannKendall, calculateSenSlope } from '../../lib/analysis/robust-trend'
 import { parsePowerMonthlyPayload } from '../../lib/nasa/client'
 import type { AnnualObservation, NasaObservation } from '../../lib/nasa/types'
 
@@ -64,6 +64,7 @@ describe('ordinary least squares trend', () => {
     expect(trend.senSlopePerYear).toBeCloseTo(0.5)
     expect(trend.mannKendall?.tau).toBe(1)
     expect(trend.mannKendall?.pValue).toBeLessThan(0.05)
+    expect(trend.autocorrelation.flagged).toBeNull()
   })
 
   it('does not manufacture significance for a constant series', () => {
@@ -90,5 +91,11 @@ describe('robust trend estimators', () => {
     const result = calculateMannKendall(points)
     expect(result.tau).toBe(1)
     expect(result.significantAt05).toBe(true)
+  })
+
+  it('flags a residual series with strong lag-1 autocorrelation for later correction', () => {
+    const result = calculateLag1ResidualAutocorrelation([1, 2, 1, 2, 1, 2])
+    expect(Math.abs(result.lag1ResidualCorrelation as number)).toBeGreaterThan(0.8)
+    expect(result.flagged).toBe(true)
   })
 })

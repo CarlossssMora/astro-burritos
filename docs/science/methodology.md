@@ -13,7 +13,7 @@ EarthScope is an independent NASA Space Apps project. The MVP uses the NASA POWE
 4. Annual temperature is a day-weighted mean of valid monthly values. Annual precipitation is the sum of each valid monthly `mm/day` value multiplied by the real calendar days in that month.
 5. A year is eligible for the trend only when at least 90% of its twelve months are present. At least three eligible years are required.
 6. The baseline trend is ordinary least squares on annual aggregates: `y = a + b * year`. EarthScope reports the OLS slope, R², a classical 95% interval and a two-sided t-test p-value when residual variance is estimable.
-7. EarthScope also reports Mann–Kendall with tie correction and Sen's slope as a non-parametric robustness check. Autocorrelation and multiple testing still require the validation protocol before any cross-source or future-model claim.
+7. EarthScope also reports Mann–Kendall with tie correction, Sen's slope and a lag-1 residual autocorrelation screen as non-parametric/diagnostic checks. The current Mann–Kendall and OLS intervals are baseline results; they are not corrected for serial correlation and are not adjusted for multiple testing in the single-series endpoint.
 
 ## Interpretation limits
 

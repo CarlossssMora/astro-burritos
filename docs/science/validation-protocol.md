@@ -31,11 +31,12 @@ The initial family is site × variable × source × window. The analysis manifes
 
 The raw archive is never modified. Evaluation creates a derived masked copy with a manifest:
 
-1. remove the last complete year to test a one-step-ahead holdout;
-2. remove a contiguous one-year block to test temporal resilience;
-3. mask random months at 5%, 10% and 20% while preserving the random seed;
-4. rerun cleaning, aggregation, OLS, Mann–Kendall and Sen's slope;
-5. compare parameter drift, sign stability, interval width, false significance and forecast errors.
+1. remove the last complete year;
+2. remove each complete year once, retaining a manifest of the deletion;
+3. rerun cleaning, aggregation, OLS, Mann–Kendall and Sen's slope;
+4. compare parameter drift, sign stability, interval width and significance retention.
+
+Random-month deletion is not a default experiment: with a 12/12 annual completeness gate it removes most affected years and confounds record loss with the eligibility rule. It may be run only as a separately labelled missing-record stress test.
 
 The evaluation set is never used during fitting. If completeness falls below the declared threshold, the model returns `blocked-by-quality` rather than imputing values silently.
 
@@ -51,14 +52,6 @@ The dashboard classification is fixed before results:
 
 This classification is descriptive. A formal difference test is required to claim that two slopes differ.
 
-## Projection gate
+## Projection boundary
 
-An exploratory linear projection may be shown only if:
-
-- the model beats persistence and seasonal-climatology baselines on a blocked holdout;
-- MAE, RMSE and 95% interval coverage are reported;
-- residual diagnostics do not show an unaddressed structural break or severe autocorrelation;
-- the historical trend is directionally stable under both windows and the deletion experiments;
-- a science reviewer approves wording that says `exploratory extrapolation`, not forecast or prediction certainty.
-
-Rainfall, vegetation and water variables may require different transformations or models. A failed validation is a scientific result and must remain visible.
+Future projection is outside the current MVP and is not implied by a significant historical trend. If a later phase requests an exploratory extrapolation, it must be a separate artifact with a blocked temporal holdout, baseline comparisons, prediction intervals and residual diagnostics. Rainfall, vegetation and water variables may require different models; a single regression for every field is not approved by this protocol.

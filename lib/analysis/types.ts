@@ -8,7 +8,7 @@ export type TrendAnalyzer = (observations: NasaObservation[]) => TrendResult
  * types deliberately keep source metadata beside values so the UI cannot
  * accidentally combine products with different semantics.
  */
-export type DataSourceId = 'nasa-power' | 'nasa-imerg' | 'nasa-appeears' | 'nasa-gibs' | 'noaa-cdo' | 'knmi-climate-explorer' | 'swot' | 'radarsat'
+export type DataSourceId = 'nasa-power' | 'nasa-imerg' | 'nasa-appeears' | 'nasa-gibs' | 'noaa-ghcn-daily' | 'knmi-climate-explorer' | 'nasa-dem' | 'swot' | 'radarsat'
 export type TemporalResolution = 'subdaily' | 'daily' | '8-day' | 'monthly' | 'annual' | 'irregular'
 export type AccessMethod = 'api' | 'download' | 'giovanni' | 'appeears' | 'gibs-tile' | 'manual'
 export type QualityFlag = 'valid' | 'fill-value' | 'non-numeric' | 'duplicate' | 'out-of-range' | 'low-quality' | 'incomplete-period' | 'suspect-outlier'

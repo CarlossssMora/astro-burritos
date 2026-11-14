@@ -1,6 +1,43 @@
-import type { MannKendallResult } from '@/lib/nasa/types'
+import type { AutocorrelationDiagnostics, MannKendallResult } from '@/lib/nasa/types'
 
 type YearValue = { year: number; value: number }
+
+export function calculateLag1ResidualAutocorrelation(values: number[]): AutocorrelationDiagnostics {
+  const method = 'Lag-1 residual Pearson correlation with a 1.96/sqrt(n) screening threshold; diagnostic only'
+  if (values.length < 4) {
+    return {
+      lag1ResidualCorrelation: null,
+      screeningThreshold: null,
+      flagged: null,
+      method,
+      warnings: ['At least four residuals are required for the lag-1 autocorrelation screen.'],
+    }
+  }
+
+  const mean = values.reduce((sum, value) => sum + value, 0) / values.length
+  const denominator = values.reduce((sum, value) => sum + (value - mean) ** 2, 0)
+  if (denominator <= Number.EPSILON) {
+    return {
+      lag1ResidualCorrelation: null,
+      screeningThreshold: 1.96 / Math.sqrt(values.length),
+      flagged: null,
+      method,
+      warnings: ['Residual variance is zero; lag-1 autocorrelation is not estimable.'],
+    }
+  }
+
+  const numerator = values.slice(1).reduce((sum, value, index) => sum + (value - mean) * (values[index] - mean), 0)
+  const correlation = numerator / denominator
+  const screeningThreshold = 1.96 / Math.sqrt(values.length)
+  const flagged = Math.abs(correlation) > screeningThreshold
+  return {
+    lag1ResidualCorrelation: correlation,
+    screeningThreshold,
+    flagged,
+    method,
+    warnings: flagged ? ['Residual lag-1 autocorrelation exceeded the screening threshold; classical OLS and baseline Mann–Kendall uncertainty may be optimistic.'] : [],
+  }
+}
 
 function normalCdf(value: number) {
   const sign = value < 0 ? -1 : 1
