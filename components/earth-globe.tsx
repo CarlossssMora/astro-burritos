@@ -12,7 +12,18 @@ const Globe = dynamic(() => import('react-globe.gl'), { ssr: false, loading: () 
 // WebGL needs literal colors, not CSS variables: neon-yellow, blue-yonder and white from the brand theme.
 const POINT_COLOR = '#EAFE07'
 const ATMOSPHERE_COLOR = '#2E96F5'
+// Light and specular tints for the enhanced day/night look (physical lighting, not UI colors).
+const NIGHT_AMBIENT_TINT = '#6d8fbd'
+const SUN_TINT = '#fff4dd'
+const OCEAN_SPECULAR_LOADING = '#102435' // muted until the water mask arrives, so the whole sphere doesn't shine
+const OCEAN_SPECULAR = '#18334a'
+// Fixed world-space sun for day/night. Puebla's default view lands on the day side (dot ≈ 0.70).
+const SUN_POSITION = new THREE.Vector3(-140, 80, 120)
+// The enhanced profile renders at up to 2× device pixels; the basic one stays at 1.5× (≈44% fewer pixels).
 const MAX_PIXEL_RATIO = 2
+const BASIC_PIXEL_RATIO = 1.5
+// ponytail: tuned by eye on the light theme; raise for more relief, lower if land washes out.
+const SUN_INTENSITY = 0.5 * Math.PI
 const EARTH_TEXTURE_2K = '/textures/earth-blue-marble.jpg'
 const EARTH_TEXTURE_4K = '/textures/earth-blue-marble-4k.jpg'
 const CAP_COLOR = 'rgba(255, 255, 255, 0.02)'
@@ -77,7 +88,7 @@ async function installGlobeEnhancements(globe: GlobeMethods, earthMaterial: THRE
     bumpScale: resolvedEarthMaterial.bumpScale,
   }
   // Prevent the default material from showing a broad full-sphere highlight while maps load.
-  resolvedEarthMaterial.specular.set('#102435')
+  resolvedEarthMaterial.specular.set(OCEAN_SPECULAR_LOADING)
   resolvedEarthMaterial.shininess = 72
   resolvedEarthMaterial.bumpScale = 2.2
   resolvedEarthMaterial.needsUpdate = true
@@ -106,13 +117,13 @@ async function installGlobeEnhancements(globe: GlobeMethods, earthMaterial: THRE
   cloudTexture.colorSpace = THREE.SRGBColorSpace
 
   resolvedEarthMaterial.specularMap = waterTexture
-  resolvedEarthMaterial.specular.set('#18334a')
+  resolvedEarthMaterial.specular.set(OCEAN_SPECULAR)
   resolvedEarthMaterial.shininess = 72
   resolvedEarthMaterial.bumpScale = 2.2
   resolvedEarthMaterial.needsUpdate = true
 
   const radius = globe.getGlobeRadius()
-  const sunDirection = new THREE.Vector3(-140, 80, 120).normalize()
+  const sunDirection = SUN_POSITION.clone().normalize()
   const nightMaterial = new THREE.ShaderMaterial({
     uniforms: { nightMap: { value: nightTexture }, sunDirection: { value: sunDirection } },
     vertexShader: `
@@ -140,8 +151,13 @@ async function installGlobeEnhancements(globe: GlobeMethods, earthMaterial: THRE
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   })
+  // Overlays draw before the polygon layer (renderOrder 0) and never write depth, so country/state
+  // borders, hover caps, rings and the point stay readable on top of clouds and city lights.
   const nightMesh = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.004, 96, 96), nightMaterial)
-  nightMesh.renderOrder = 2
+  nightMesh.renderOrder = -2
+  // three-globe turns its globe mesh by -90° on Y (prime meridian along +Z); overlay spheres must match,
+  // or city lights and clouds land 90° of longitude away from the land they belong to.
+  nightMesh.rotation.y = -Math.PI / 2
 
   const cloudMaterial = new THREE.MeshPhongMaterial({
     map: cloudTexture,
@@ -151,7 +167,8 @@ async function installGlobeEnhancements(globe: GlobeMethods, earthMaterial: THRE
     alphaTest: 0.04,
   })
   const cloudMesh = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.012, 96, 96), cloudMaterial)
-  cloudMesh.renderOrder = 3
+  cloudMesh.renderOrder = -1
+  cloudMesh.rotation.y = -Math.PI / 2 // same alignment as the globe; the drift loop rotates from here
   scene.add(nightMesh, cloudMesh)
 
   return {
@@ -183,7 +200,7 @@ export function EarthGlobe({ region, paused, resetSignal, onSelect }: { region: 
   const [ready, setReady] = useState(false)
   const [size, setSize] = useState({ width: 0, height: 0 })
   const [visualProfile, setVisualProfile] = useState<VisualProfile | null>(null)
-  const earthMaterial = useMemo(() => new THREE.MeshPhongMaterial({ color: 0x000000, specular: new THREE.Color('#102435'), shininess: 72 }), [])
+  const earthMaterial = useMemo(() => new THREE.MeshPhongMaterial({ color: 0x000000, specular: new THREE.Color(OCEAN_SPECULAR_LOADING), shininess: 72 }), [])
   const [hovered, setHovered] = useState<Area | null>(null)
   const countries = useCountries().data?.features
   const states = useStates(region.country).data?.features
@@ -226,24 +243,31 @@ export function EarthGlobe({ region, paused, resetSignal, onSelect }: { region: 
 
   // onGlobeReady can fire before the ref is attached, so ref-based setup runs in effects keyed on `ready`.
   useEffect(() => {
-    if (!ready || !globeRef.current) return
     const globe = globeRef.current
-    const renderer = globe.renderer()
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO))
-    renderer.toneMappingExposure = 1.08
-
-    // Shape the stock Three.js lights into a cooler ambient fill and a brighter sun.
-    const [ambientLight, sunLight] = globe.lights()
-    if (ambientLight) {
-      ambientLight.color.set('#6d8fbd')
-      ambientLight.intensity = Math.PI * (visualProfile?.enhancedEffects ? 0.34 : 0.72)
+    if (!ready || !globe || !visualProfile) return
+    const enhanced = visualProfile.enhancedEffects
+    globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio, enhanced ? MAX_PIXEL_RATIO : BASIC_PIXEL_RATIO))
+    const [ambient, sun] = globe.lights()
+    if (enhanced) {
+      // Day/night: a dim cool fill and a fixed world-space sun; the city-lights shader lights the night side.
+      ambient.color.set(NIGHT_AMBIENT_TINT)
+      ambient.intensity = 0.34 * Math.PI
+      sun.color.set(SUN_TINT)
+      sun.intensity = 1.18 * Math.PI
+      sun.position.copy(SUN_POSITION)
+      globe.scene().add(sun)
+    } else {
+      // Basic profile has no city lights, so a dark side would only look dark: keep the bright look.
+      // globe.gl ships a grey ambient plus a sun over the north pole (visible face at ~60% of the texture);
+      // a white ambient shows the texture at full strength and a camera-riding sun keeps the relief.
+      ambient.color.setScalar(1)
+      ambient.intensity = Math.PI
+      sun.intensity = SUN_INTENSITY
+      sun.position.set(-150, 150, 0)
+      globe.camera().add(sun)
+      globe.scene().add(globe.camera())
     }
-    if (sunLight) {
-      sunLight.color.set('#fff4dd')
-      sunLight.intensity = Math.PI * (visualProfile?.enhancedEffects ? 1.18 : 1.05)
-      sunLight.position.set(-140, 80, 120)
-    }
-  }, [ready, visualProfile?.enhancedEffects])
+  }, [ready, visualProfile])
 
   useEffect(() => {
     if (!ready || !visualProfile?.enhancedEffects || !globeRef.current) return
